@@ -3,6 +3,10 @@
 
 {% style %}
   :root {
+    /* 1. Inherit Store Fonts */
+    --thumb-font-family: var(--font-body-family, sans-serif);
+
+    /* 2. Your Existing Variables */
     --thumb-bg-color: {{ block.settings.bg_color }};
     --thumb-nav_opacity: {{ block.settings.nav_opacity | default: 90 | divided_by: 100.0 }};
     --thumb-text-active: {{ block.settings.color_active }};
@@ -12,7 +16,13 @@
     --thumb-spacing-bottom: {{ block.settings.spacing_bottom }}px;
     --thumb-menu-width: {{ block.settings.menu_width }}%;
     --thumb-desktop-max: {{ block.settings.desktop_width | default: 600 }}px;
-  --thumb-scale: {{ block.settings.desktop_scale | default: 1.0 }};
+    --thumb-scale: {{ block.settings.desktop_scale | default: 1.0 }};
+  }
+
+  /* 3. Apply the inherited font to labels */
+  .thumb-link .label {
+    font-family: var(--thumb-font-family) !important;
+    font-weight: 600; /* Often looks cleaner on mobile */
   }
 
   {% if block.settings.enable_auto_dark %}
@@ -39,178 +49,338 @@
   {% endif %}
 
 
-/* =========================================
-   VISIBILITY & DESKTOP WIDTH LOGIC
-   ========================================= */
+  /* =========================================
+    VISIBILITY & DESKTOP WIDTH LOGIC
+    ========================================= */
 
-/* 1. Desktop Styles (Screens larger than 1024px) */
-@media screen and (min-width: 1025px) {
-  .thumb-wrapper {
-    /* Apply your custom desktop width and scale */
-    max-width: var(--thumb-desktop-max) !important;
-    transform: translateX(-50%) scale(var(--thumb-scale));
-    transform-origin: bottom center;
+  /* 1. Desktop Styles (Screens larger than 1024px) */
+  @media screen and (min-width: 1025px) {
+    .thumb-wrapper {
+      /* Apply your custom desktop width and scale */
+      max-width: var(--thumb-desktop-max) !important;
+      transform: translateX(-50%) scale(var(--thumb-scale));
+      transform-origin: bottom center;
+    }
+
+    /* HIDE if the user selected Mobile or Mobile/Tablet only */
+    {% if block.settings.visibility_scope != 'all' %}
+      .thumb-wrapper { display: none !important; }
+    {% endif %}
   }
 
-  /* HIDE if the user selected Mobile or Mobile/Tablet only */
-  {% if block.settings.visibility_scope != 'all' %}
-    .thumb-wrapper { display: none !important; }
+  /* 2. Tablet Styles (Between 481px and 1024px) */
+  @media screen and (min-width: 481px) and (max-width: 1024px) {
+    {% if block.settings.visibility_scope == 'mobile' %}
+      .thumb-wrapper { display: none !important; }
+    {% endif %}
+  }
+
+  /* 3. Mobile Styles (Under 480px) */
+  /* Always visible on mobile by default */
+
+  {% endstyle %}
+
+  <div class="thumb-wrapper theme-{{ block.settings.theme_selection }} {% if block.settings.enable_spacer %}has-spacer{% endif %}">
+  {% if block.settings.enable_draggable %}
+    <div class="drag-handle">
+      <i class="ri-drag-move-2-fill"></i>
+    </div>
   {% endif %}
-}
+    <div class="thumb-zone-nav">
+      {%- assign main_menu = linklists[block.settings.menu_source].links -%}
+      {%- assign icon_list = block.settings.icon_mapping | replace: ' ', '' | split: ',' -%}
+      {%- assign label_list = block.settings.custom_labels | split: ',' -%}
+      {%- assign url_list = block.settings.url_overrides | replace: ' ', '' | split: ',' -%}
+      
 
-/* 2. Tablet Styles (Between 481px and 1024px) */
-@media screen and (min-width: 481px) and (max-width: 1024px) {
-  {% if block.settings.visibility_scope == 'mobile' %}
-    .thumb-wrapper { display: none !important; }
-  {% endif %}
-}
-
-/* 3. Mobile Styles (Under 480px) */
-/* Always visible on mobile by default */
-
-{% endstyle %}
-
-<div class="thumb-wrapper theme-{{ block.settings.theme_selection }}">
-  <div class="thumb-zone-nav">
-    {%- assign main_menu = linklists[block.settings.menu_source].links -%}
-    {%- assign icon_list = block.settings.icon_mapping | replace: ' ', '' | split: ',' -%}
-    {%- assign label_list = block.settings.custom_labels | split: ',' -%}
-    {%- assign url_list = block.settings.url_overrides | replace: ' ', '' | split: ',' -%}
-    
-
-    {%- if main_menu.size > 0 -%}
-      {%- for link in main_menu limit: 5 -%}
-        {%- assign index = forloop.index0 -%}
-        
-        {%- assign icon_name = icon_list[index] | default: 'link' | strip -%}
-        {%- assign custom_label = label_list[index] | strip -%}
-        {%- assign final_label = custom_label | default: link.title -%}
-        {%- assign label_down = final_label | downcase -%}
-        
-        {%- assign custom_url = url_list[index] | strip -%}
-        {%- assign final_url = custom_url | default: link.url -%}
-        
-       <a href="{{ final_url }}" 
-        class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path == final_url %}active{% endif %}"
-        {% if final_url contains '#' %}data-thumb-action="{{ final_url | remove: '#' }}"{% endif %}>
-          <div class="icon-box">
-             <i class="ri-{{ icon_name }}{% unless icon_name contains '-line' or icon_name contains '-fill' %}-line{% endunless %}"></i>
-             
-             {%- if block.settings.show_cart_count and label_down contains 'cart' -%}
-                {%- if cart.item_count > 0 -%}
-                  <span class="cart-badge">{{ cart.item_count }}</span>
-                {%- endif -%}
-             {%- endif -%}
-          </div>
-          {%- if block.settings.show_labels -%}
-            <span class="label">{{ final_label | truncate: 12, '..' }}</span>
-          {%- endif -%}
-        </a>
-      {%- endfor -%}
-    {%- endif -%}
+      {%- if main_menu.size > 0 -%}
+        {%- for link in main_menu limit: 5 -%}
+          {%- assign index = forloop.index0 -%}
+          
+          {%- assign icon_name = icon_list[index] | default: 'link' | strip -%}
+          {%- assign custom_label = label_list[index] | strip -%}
+          {%- assign final_label = custom_label | default: link.title -%}
+          {%- assign label_down = final_label | downcase -%}
+          
+          {%- assign custom_url = url_list[index] | strip -%}
+          {%- assign final_url = custom_url | default: link.url -%}
+          
+        <a href="{{ final_url }}" 
+          class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path contains final_url %}active{% endif %}"
+          {% if final_url contains '#' %}data-thumb-action="{{ final_url | remove: '#' }}"{% endif %}>
+            <div class="icon-box">
+              <i class="ri-{{ icon_name }}{% unless icon_name contains '-line' or icon_name contains '-fill' %}-line{% endunless %}"></i>
+              
+              {%- if block.settings.show_cart_count and label_down contains 'cart' -%}
+                  {%- if cart.item_count > 0 -%}
+                    <span class="cart-badge">{{ cart.item_count }}</span>
+                  {%- endif -%}
+              {%- endif -%}
+            </div>
+            {%- if block.settings.show_labels -%}
+              <span class="label">{{ final_label | truncate: 12, '..' }}</span>
+            {%- endif -%}
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
   </div>
-</div>
 
 
 <script>
-  // 1. Theme Editor Integration (Fluid real-time updates)
-  document.addEventListener('shopify:block:change', (event) => {
-    const settings = event.detail;
-    const root = document.documentElement;
+  document.addEventListener('DOMContentLoaded', () => {
+    // --- INITIALIZATION & SETTINGS ---
     const wrapper = document.querySelector('.thumb-wrapper');
+    const spacerEnabled = {{ block.settings.enable_spacer | json }};
+    const dragEnabled = {{ block.settings.enable_draggable | json }};
 
-    // Nav Opacity Slider (Independent of icons)
-    if (settings.nav_opacity !== undefined) {
-      root.style.setProperty('--thumb-nav_opacity', settings.nav_opacity / 100.0);
+    if (!wrapper) return;
+
+    // --- 1. Spacer Logic (Push Content Up) ---
+    function adjustBodyPadding() {
+      if (!spacerEnabled) return;
+      // Only add padding if docked at bottom (not side)
+      if (!wrapper.classList.contains('vertical-dock')) {
+        const height = wrapper.offsetHeight;
+        const spacing = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-spacing-bottom')) || 20;
+        document.body.style.paddingBottom = (height + spacing) + 'px';
+      } else {
+        document.body.style.paddingBottom = '0px';
+      }
     }
-
-    // Background and Active Colors
-    if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
-    if (settings.color_active) {
-      root.style.setProperty('--thumb-text-active', settings.color_active);
-      root.style.setProperty('--thumb-text-inactive', settings.color_active + '80'); // 50% opacity hex
-    }
-
-    // Sizing and Positions
-    if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
-    if (settings.text_size) root.style.setProperty('--thumb-text-size', settings.text_size + 'px');
-    if (settings.spacing_bottom !== undefined) root.style.setProperty('--thumb-spacing-bottom', settings.spacing_bottom + 'px');
-    if (settings.menu_width) root.style.setProperty('--thumb-menu-width', settings.menu_width + '%');
     
-    // Desktop Specifics
-    if (settings.desktop_width) root.style.setProperty('--thumb-desktop-max', settings.desktop_width + 'px');
-    if (settings.desktop_scale) root.style.setProperty('--thumb-scale', settings.desktop_scale);
-
-    // Theme Selection (Class swap)
-    if (settings.theme_selection && wrapper) {
-      wrapper.className = `thumb-wrapper theme-${settings.theme_selection}`;
-    }
-  });
-
-  // 2. Haptic Feedback
-  function triggerHaptic() {
-    if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) {
-      navigator.vibrate(12);
-    }
-  }
-
-  // 3. Real-time Cart Update Listener
-  document.addEventListener('change', function() {
-    fetch(`${window.Shopify.routes.root}cart.js`)
-      .then(response => response.json())
-      .then(cart => {
-        const badges = document.querySelectorAll('.cart-badge');
-        badges.forEach(badge => {
-          badge.textContent = cart.item_count;
-          badge.style.display = cart.item_count > 0 ? 'flex' : 'none';
-        });
-      })
-      .catch(error => console.error('Thumb-Nav Cart Sync Error:', error));
-  });
-
-  // 4. Universal Action Trigger
-  const triggerUniversalAction = (type) => {
-    let selectors = [];
-    const customSearch = "{{ block.settings.custom_search_selector }}";
-    const customMenu = "{{ block.settings.custom_menu_selector }}";
-
-    if (type === 'search') {
-      selectors = [customSearch, '[data-action="toggle-search"]', '.header__search-toggle', '.search-modal__trigger', '.header__icon--search', '[href="/search"]'].filter(s => s);
-    } else if (type === 'menu') {
-      selectors = [customMenu, '[data-action="open-drawer"]', '[aria-controls="mobile-menu"]', '.header__icon--menu', '.menu-drawer-container summary'].filter(s => s);
+    // Run spacer on load
+    if (spacerEnabled) {
+      adjustBodyPadding();
+      window.addEventListener('resize', adjustBodyPadding);
     }
 
-    for (let selector of selectors) {
-      const el = document.querySelector(selector);
-      if (el && typeof el.click === 'function') {
-        el.click();
-        return true; 
-      }
-    }
+    // --- 2. Drag & Snap Logic (Handle Edition) ---
+    const handle = wrapper.querySelector('.drag-handle');
+    
+    if (dragEnabled && handle) {
+      let isDragging = false;
+      let startX, startY, initialLeft, initialTop;
 
-    if (type === 'search') window.location.href = '/search';
-    if (type === 'menu') window.location.href = '/collections/all';
-  };
+      handle.style.touchAction = 'none'; 
+      handle.style.cursor = 'grab';
 
-  // 5. Global Event Listener for Navigation
-  document.querySelectorAll('.thumb-link').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const action = this.getAttribute('data-thumb-action');
-      if (action) {
-        e.preventDefault();
-        switch (action) {
-          case 'search':
-          case 'menu': triggerUniversalAction(action); break;
-          case 'top': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
-          case 'back': window.history.back(); break;
-          case 'share':
-            if (navigator.share) navigator.share({ title: document.title, url: window.location.href });
-            break;
+      const onStart = (e) => {
+        // Prevent default only for the handle to stop scrolling
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        isDragging = true;
+        startX = clientX;
+        startY = clientY;
+
+        wrapper.classList.add('is-dragging');
+        handle.style.cursor = 'grabbing';
+
+        const rect = wrapper.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        triggerHaptic();
+      };
+
+      const onMove = (e) => {
+        if (!isDragging) return;
+        if (e.cancelable) e.preventDefault(); 
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+
+        wrapper.style.transform = 'none'; 
+        wrapper.style.bottom = 'auto'; 
+        wrapper.style.left = (initialLeft + deltaX) + 'px';
+        wrapper.style.top = (initialTop + deltaY) + 'px';
+      };
+
+      const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        wrapper.classList.remove('is-dragging');
+        handle.style.cursor = 'grab';
+
+        // Snap Logic
+        const rect = wrapper.getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        
+        const distToBottom = screenHeight - rect.bottom;
+        const distToLeft = rect.left;
+        const distToRight = screenWidth - rect.right;
+
+        // Snap to Bottom if close (within 150px)
+        if (distToBottom < 150 && distToBottom < distToLeft && distToBottom < distToRight) {
+          wrapper.classList.remove('vertical-dock');
+          wrapper.style.top = 'auto';
+          wrapper.style.bottom = 'calc(var(--thumb-spacing-bottom, 20px) + env(safe-area-inset-bottom, 0px))';
+          wrapper.style.left = '50%';
+          wrapper.style.transform = 'translateX(-50%)';
+          wrapper.style.width = 'var(--thumb-menu-width, 95%)';
+          wrapper.style.right = 'auto';
+          if(spacerEnabled) adjustBodyPadding();
+        } else {
+          // Snap Side
+          wrapper.classList.add('vertical-dock');
+          wrapper.style.bottom = 'auto';
+          wrapper.style.transform = 'translateY(-50%)';
+          wrapper.style.top = (rect.top + (rect.height / 2)) + 'px';
+          wrapper.style.width = '60px';
+
+          if (distToLeft < distToRight) {
+            wrapper.style.left = '10px';
+            wrapper.style.right = 'auto';
+          } else {
+            wrapper.style.left = 'auto';
+            wrapper.style.right = '10px'; 
+            wrapper.style.left = (screenWidth - 70) + 'px'; 
+          }
+          document.body.style.paddingBottom = '0px';
         }
+      };
+
+      // Events
+      handle.addEventListener('touchstart', onStart, {passive: false});
+      handle.addEventListener('mousedown', onStart);
+      document.addEventListener('touchmove', onMove, {passive: false});
+      document.addEventListener('touchend', onEnd);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+    }
+
+    // --- 3. Theme Editor Integration (Fluid Updates) ---
+    document.addEventListener('shopify:block:change', (event) => {
+      const settings = event.detail;
+      const root = document.documentElement;
+      
+      if (settings.nav_opacity !== undefined) root.style.setProperty('--thumb-nav_opacity', settings.nav_opacity / 100.0);
+      if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
+      if (settings.color_active) {
+        root.style.setProperty('--thumb-text-active', settings.color_active);
+        root.style.setProperty('--thumb-text-inactive', settings.color_active + '80');
       }
-      triggerHaptic();
+      if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
+      if (settings.text_size) root.style.setProperty('--thumb-text-size', settings.text_size + 'px');
+      if (settings.spacing_bottom !== undefined) root.style.setProperty('--thumb-spacing-bottom', settings.spacing_bottom + 'px');
+      if (settings.menu_width) root.style.setProperty('--thumb-menu-width', settings.menu_width + '%');
+      if (settings.theme_selection) {
+        wrapper.className = `thumb-wrapper theme-${settings.theme_selection} ${wrapper.classList.contains('vertical-dock') ? 'vertical-dock' : ''}`;
+      }
+      
+      // Re-run spacer check if settings change
+      if(spacerEnabled) adjustBodyPadding();
     });
-  });
+
+    // --- 4. Haptic Feedback Helper ---
+    function triggerHaptic() {
+      if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) {
+        navigator.vibrate(12);
+      }
+    }
+
+    // --- 5. Real-time Cart Update Listener ---
+    function updateCartBadges() {
+      fetch(`${window.Shopify.routes.root}cart.js`)
+        .then(response => response.json())
+        .then(cart => {
+          const badges = document.querySelectorAll('.cart-badge');
+          badges.forEach(badge => {
+            badge.textContent = cart.item_count;
+            badge.style.display = cart.item_count > 0 ? 'flex' : 'none';
+          });
+        })
+        .catch(error => console.error('Thumb-Nav Cart Sync Error:', error));
+    }
+    // Listen for global change events (often fired by themes after ajax cart add)
+    document.addEventListener('change', updateCartBadges);
+    // Also run once on load
+    updateCartBadges();
+
+    // --- 6. Universal Action Trigger (Drawers) ---
+    const triggerUniversalAction = (type) => {
+      let selectors = [];
+      const customSearch = "{{ block.settings.custom_search_selector }}";
+      const customMenu = "{{ block.settings.custom_menu_selector }}";
+
+      if (type === 'search') {
+        selectors = [customSearch, '[data-action="toggle-search"]', '.header__search-toggle', '.search-modal__trigger', '.header__icon--search', '[href="/search"]'].filter(s => s);
+      } else if (type === 'menu') {
+        selectors = [customMenu, '[data-action="open-drawer"]', '[aria-controls="mobile-menu"]', '.header__icon--menu', '.menu-drawer-container summary'].filter(s => s);
+      } else if (type === 'cart') {
+        selectors = ['#cart-icon-bubble', '[aria-controls="CartDrawer"]', '[aria-controls="cart-drawer"]', '.header__icon--cart', '[data-action="open-cart"]', '.js-cart-trigger'];
+      }
+
+      for (let selector of selectors) {
+        const el = document.querySelector(selector);
+        if (el) { el.click(); return true; }
+      }
+
+      // Fallbacks
+      if (type === 'search') window.location.href = '/search';
+      if (type === 'menu') window.location.href = '/collections/all';
+      if (type === 'cart') window.location.href = '/cart';
+    };
+
+    // --- 7. Global Event Listener for Navigation ---
+    document.querySelectorAll('.thumb-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const action = this.getAttribute('data-thumb-action');
+        const href = this.getAttribute('href');
+
+        // Intercept Cart Clicks
+        if (href && href.includes('/cart')) {
+          e.preventDefault();
+          triggerUniversalAction('cart');
+          triggerHaptic();
+          return;
+        }
+
+        if (action) {
+          e.preventDefault();
+          switch (action) {
+            case 'search':
+            case 'menu': triggerUniversalAction(action); break;
+            case 'top': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
+            case 'back': window.history.back(); break;
+            case 'share':
+              if (navigator.share) navigator.share({ title: document.title, url: window.location.href });
+              break;
+          }
+        }
+        triggerHaptic();
+      });
+    });
+
+    // --- 8. Context Awareness: Auto-Hide on Drawer/Modal Open ---
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const body = document.body;
+          const isLocked = body.classList.contains('overflow-hidden') || 
+                           body.classList.contains('js-drawer-open') ||
+                           body.classList.contains('scroll-locked');
+          
+          if (isLocked) {
+            wrapper.classList.add('nav-suppressed');
+          } else {
+            wrapper.classList.remove('nav-suppressed');
+          }
+        }
+      });
+    });
+    observer.observe(document.body, { attributes: true });
+
+  }); // End DOMContentLoaded
 </script>
 
 
@@ -386,16 +556,22 @@
       "content": "Advanced / Theme Support"
     },
     {
-      "type": "text",
-      "id": "custom_search_selector",
-      "label": "Custom Search Selector",
-      "placeholder": ".header__search-toggle"
+      "type": "header",
+      "content": "Behavior & Interaction"
     },
     {
-      "type": "text",
-      "id": "custom_menu_selector",
-      "label": "Custom Menu Selector",
-      "placeholder": ".mobile-nav-trigger"
+      "type": "checkbox",
+      "id": "enable_spacer",
+      "label": "Push Page Content Up",
+      "info": "Adds padding to the bottom of the page so the nav bar doesn't cover footer content.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_draggable",
+      "label": "Allow User to Drag & Rotate",
+      "info": "Visitors can drag the nav bar. Snapping it to the side rotates it vertically.",
+      "default": false
     },
     {
   "type": "range",

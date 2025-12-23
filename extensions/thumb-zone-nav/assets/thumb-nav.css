@@ -1,9 +1,5 @@
 
 
-
-
-
-
 /* =========================================
    BASE STYLES 
    ========================================= */
@@ -19,14 +15,14 @@
   transition: all 0.3s ease;
 }
 
-
 .thumb-zone-nav {
   display: flex;
   align-items: flex-end; 
   transition: all 0.3s ease;
   padding-bottom: constant(safe-area-inset-bottom, 0px);
   
-  /* Apply opacity globally using color-mix */
+  /* 1. Global Transparency Logic (The "Base Rule") */
+  /* This applies to any theme using the user's selected background color */
   background-color: color-mix(
     in srgb, 
     var(--thumb-bg-color), 
@@ -44,7 +40,7 @@
   position: relative;
   min-width: 0; 
   padding-top: 5px;
-  opacity: 1 !important;
+  opacity: 1 !important; /* Ensures icons stay solid */
   color: var(--thumb-text-inactive);
 }
 
@@ -79,14 +75,19 @@
 }
 
 /* =========================================
-   THEME 1: iOS GLASS 
+   THEME 1: iOS GLASS (UPDATED)
    ========================================= */
 .theme-ios .thumb-zone-nav {
   padding: 10px 0;
-  background-color: var(--thumb-bg-color); 
-  opacity: var(--thumb-nav_opacity);
-  /* Modern Glassmorphism blend */
-  background-color: color-mix(in srgb, var(--thumb-bg-color), transparent calc(100% - (var(--nav_opacity) * 100%)));
+  /* REMOVED: opacity: var(--thumb-nav_opacity); */
+  
+  /* Corrected variable name and applied mix specifically for Glass effect */
+  background-color: color-mix(
+    in srgb, 
+    var(--thumb-bg-color), 
+    transparent calc(100% - (var(--thumb-nav_opacity) * 100%))
+  ) !important;
+  
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
@@ -98,7 +99,7 @@
    THEME 2: MIDNIGHT CAPSULE 
    ========================================= */
 .theme-midnight .thumb-zone-nav {
-  background: var(--thumb-bg-color);
+  /* No background definition needed here; it inherits the Base Rule */
   border-radius: 100px;
   padding: 14px 20px;
   box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
@@ -118,18 +119,12 @@
 }
 
 /* =========================================
-   THEME 3: SPLIT ACTION (SAFE AREA PADDING)
+   THEME 3: SPLIT ACTION 
    ========================================= */
-.theme-action { 
-  bottom: 0 !important; 
-  width: 100% !important; 
-  left: 0; 
-  transform: none; 
-}
+.theme-action { bottom: 0 !important; width: 100% !important; left: 0; transform: none; }
 .theme-action .thumb-zone-nav {
-  background: var(--thumb-bg-color);
+  /* Inherits Base Rule color */
   border-top: 1px solid #eee;
-  /* SAFE AREA: Adds device padding to the existing 30px footer space */
   padding: 10px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0; 
   align-items: flex-end;
 }
@@ -145,19 +140,13 @@
 }
 
 /* =========================================
-   THEME 4: TEXT ONLY (SAFE AREA PADDING)
+   THEME 4: TEXT ONLY 
    ========================================= */
-.theme-text-only { 
-  bottom: 0 !important; 
-  width: 100% !important; 
-  left: 0; 
-  transform: none; 
-}
+.theme-text-only { bottom: 0 !important; width: 100% !important; left: 0; transform: none; }
 .theme-text-only .thumb-zone-nav {
   justify-content: space-evenly;
-  /* SAFE AREA: Adds device padding to the footer */
   padding: 18px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0;
-  background: var(--thumb-bg-color);
+  /* Inherits Base Rule color */
   border-top: 1px solid rgba(0,0,0,0.08);
   align-items: center;
 }
@@ -165,21 +154,36 @@
 .theme-text-only .icon-box { height: 0; margin: 0; }
 .theme-text-only .thumb-link.active { text-decoration: underline; text-underline-offset: 4px; opacity: 1; }
 
-/* 1. Monolith */
-.theme-monolith .thumb-zone-nav { background: #000; border-radius: 0; padding: 15px 0; }
+/* =========================================
+   STYLED THEMES (UPDATED FOR TRANSPARENCY)
+   ========================================= */
+
+/* 1. Monolith (Hardcoded Black -> Transparent Black) */
+.theme-monolith .thumb-zone-nav { 
+  /* Override Base Rule with Black Mix */
+  background-color: color-mix(in srgb, #000000, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  border-radius: 0; padding: 15px 0; 
+}
 .theme-monolith .thumb-link { color: #666; font-family: sans-serif; text-transform: uppercase; }
 .theme-monolith .thumb-link.active { color: #fff; }
 
 /* 2. Serif-Chic */
-.theme-serif-chic .thumb-zone-nav { background: var(--thumb-bg-color); border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; }
+.theme-serif-chic .thumb-zone-nav { 
+  /* Inherits Base Rule */
+  border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; 
+}
 .theme-serif-chic .label { font-family: serif; font-style: italic; color: #d4af37; }
 
-/* 3. The Ghost */
-.theme-ghost .thumb-zone-nav { background: transparent; backdrop-filter: none; box-shadow: none; }
+/* 3. The Ghost (Always Transparent) */
+.theme-ghost .thumb-zone-nav { background: transparent !important; backdrop-filter: none; box-shadow: none; }
 .theme-ghost .icon-box { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); color: #fff; }
 
-/* 4. Floating Pearl */
-.theme-pearl .thumb-zone-nav { background: #fff; border-radius: 50px; border: 0.5px solid #eee; padding: 5px 15px; }
+/* 4. Floating Pearl (Hardcoded White -> Transparent White) */
+.theme-pearl .thumb-zone-nav { 
+  /* Override Base Rule with White Mix */
+  background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  border-radius: 50px; border: 0.5px solid #eee; padding: 5px 15px; 
+}
 .theme-pearl .thumb-link.active { transform: translateY(-3px); }
 
 /* 5. The Hot-Key */
@@ -189,26 +193,32 @@
   border: 5px solid var(--thumb-bg-color); box-shadow: 0 8px 15px rgba(0,0,0,0.2); 
 }
 
-/* 6. Neumorphic Glow */
-.theme-neumorphic .thumb-zone-nav { background: #e0e0e0; box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff; border-radius: 20px; }
+/* 6. Neumorphic Glow (Hardcoded Grey -> Transparent Grey) */
+.theme-neumorphic .thumb-zone-nav { 
+  background-color: color-mix(in srgb, #e0e0e0, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff; border-radius: 20px; 
+}
 .theme-neumorphic .thumb-link.active .icon-box { color: var(--thumb-text-active); text-shadow: 0 0 8px var(--thumb-text-active); }
 
-/* 7. Flash Sale */
-.theme-flash-sale .thumb-zone-nav { background: linear-gradient(90deg, #ff416c, #ff4b2b); }
+/* 7. Flash Sale (Gradient - Opacity slider won't work well here without complex masking, kept as solid) */
+.theme-flash-sale .thumb-zone-nav { background: linear-gradient(90deg, #ff416c, #ff4b2b) !important; }
 .theme-flash-sale .thumb-link { color: rgba(255,255,255,0.7); }
 .theme-flash-sale .thumb-link.active { color: #fff; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
 /* 8. The Stepper */
 .theme-stepper::before { content: ""; position: absolute; top: 0; left: 0; width: 60%; height: 3px; background: var(--thumb-text-active); z-index: 2; }
-.theme-stepper .thumb-zone-nav { background: var(--thumb-bg-color); padding-top: 15px; }
+.theme-stepper .thumb-zone-nav { padding-top: 15px; }
 
 /* 9. Bubble Tea */
-.theme-bubble-tea .thumb-zone-nav { background: transparent; gap: 8px; justify-content: center; }
+.theme-bubble-tea .thumb-zone-nav { background: transparent !important; gap: 8px; justify-content: center; }
 .theme-bubble-tea .thumb-link { background: #fff; border-radius: 50%; max-width: 60px; height: 60px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
 
-/* 10. Soft-Pop */
-.theme-soft-pop .thumb-zone-nav { background: #f0f4f8; border-radius: 30px; }
+/* 10. Soft-Pop (Pastel Blue -> Transparent Pastel) */
+.theme-soft-pop .thumb-zone-nav { 
+  background-color: color-mix(in srgb, #f0f4f8, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  border-radius: 30px; 
+}
 .theme-soft-pop .thumb-link.active { background: #fff; border-radius: 20px; margin: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
 /* 11. The Sticker */
@@ -219,15 +229,21 @@
 .theme-socialite .thumb-zone-nav { overflow-x: auto; justify-content: flex-start; padding: 10px 20px; -webkit-overflow-scrolling: touch; }
 .theme-socialite .thumb-link { min-width: 80px; flex: 0 0 auto; }
 
-
-/* 13. Dark Mode Pro */
-.theme-dark-pro .thumb-zone-nav { background: #121212; border-radius: 16px; border: 1px solid #333; }
+/* 13. Dark Mode Pro (Dark Grey -> Transparent Dark Grey) */
+.theme-dark-pro .thumb-zone-nav { 
+  background-color: color-mix(in srgb, #121212, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  border-radius: 16px; border: 1px solid #333; 
+}
 .theme-dark-pro .thumb-link.active { color: #00e5ff; }
 
-/* 14. The Grid */
-.theme-grid .thumb-zone-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: #fff; border-radius: 12px; }
+/* 14. The Grid (White -> Transparent White) */
+.theme-grid .thumb-zone-nav { 
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; 
+  background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
+  border-radius: 12px; 
+}
 
-/* 15. The Side-Bar (Fan effect) */
+/* 15. The Side-Bar */
 .theme-side-fan { left: 20px; transform: none; width: 60px; }
 .theme-side-fan .thumb-zone-nav { flex-direction: column-reverse; gap: 15px; }
 
@@ -237,11 +253,8 @@
 .theme-min-dot .thumb-link.active::after { content: "•"; position: absolute; bottom: 0; }
 
 /* 17. Border-Top */
-.theme-border-top .thumb-zone-nav { background: transparent; }
+.theme-border-top .thumb-zone-nav { background: transparent !important; }
 .theme-border-top .thumb-link.active { border-top: 3px solid var(--thumb-text-active); padding-top: 2px; }
-
-
-
 
 
 
@@ -289,4 +302,268 @@
     background: #000000 !important; /* Pure black for OLED */
     border-top: 1px solid #222;
   }
+}
+
+
+
+/* =========================================
+   CONTEXTUAL LAYOUT: PRODUCT PAGE SIDEBAR
+   ========================================= */
+.page-type-product .thumb-wrapper {
+  /* Reset bottom fixed positioning */
+  bottom: auto;
+  left: auto;
+  transform: none;
+  
+  /* Dock to Right Side */
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  
+  /* Change Dimensions */
+  width: 60px; /* Slim vertical pill */
+  height: auto;
+  min-height: 200px;
+  
+  /* Visual Tweaks for Side Dock */
+  border-radius: 30px;
+  padding: 20px 0;
+  flex-direction: column;
+}
+
+.page-type-product .thumb-zone-nav {
+  flex-direction: column; /* Stack icons vertically */
+  gap: 20px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--thumb-bg-color); /* Ensure background is solid */
+}
+
+.page-type-product .thumb-link {
+  width: 100%;
+  padding: 0;
+}
+
+.page-type-product .label {
+  display: none; /* Hide labels in side mode to keep it clean */
+}
+
+/* Ensure badges still look good */
+.page-type-product .cart-badge {
+  top: 0;
+  right: 10px;
+}
+
+
+
+
+/* =========================================
+   INTERACTION: DRAG & ROTATE
+   ========================================= */
+
+/* Visual cue while dragging */
+.thumb-wrapper.is-dragging {
+  opacity: 0.9;
+  transform: scale(1.02) !important;
+  transition: none !important; /* Instant follow */
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+/* Vertical Orientation (Side Docked) */
+.thumb-wrapper.vertical-dock {
+  /* Reset layout for vertical stack */
+  min-height: 200px;
+  height: auto;
+  flex-direction: column;
+  padding: 20px 0;
+  
+  /* Ensure transitions happen smoothly after drop */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.thumb-wrapper.vertical-dock .thumb-zone-nav {
+  flex-direction: column; /* Stack icons */
+  gap: 15px;
+  width: 100%;
+  height: 100%;
+  padding: 15px 0;
+  border-radius: 35px;
+  justify-content: center;
+  align-items: center;
+}
+
+.thumb-wrapper.vertical-dock .thumb-link {
+  width: 100%;
+  flex: 0 0 auto; /* Don't stretch */
+  padding: 5px 0;
+}
+
+.thumb-wrapper.vertical-dock .label {
+  /* Hide labels in vertical mode to keep it slim */
+  display: none; 
+}
+
+.thumb-wrapper.vertical-dock .cart-badge {
+  top: 0;
+  right: 8px;
+}
+
+/* Fix specific themes in vertical mode */
+.theme-action.vertical-dock, 
+.theme-text-only.vertical-dock {
+  bottom: auto !important;
+  left: auto !important;
+  width: 60px !important;
+}
+/* =========================================
+   COMPONENT: DRAG HANDLE (THEME AWARE)
+   ========================================= */
+.drag-handle {
+  /* Layout & Position */
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  z-index: 2147483650 !important;
+
+  /* Base Appearance (Adaptive High Contrast) */
+  background-color: var(--thumb-text-active);
+  color: var(--thumb-bg-color);
+  border: 2px solid var(--thumb-bg-color);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+  /* Content Alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Interaction */
+  cursor: grab;
+  touch-action: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* Intro Animation */
+  animation: handle-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
+}
+
+/* Inner Icon/SVG */
+.drag-handle i,
+.drag-handle svg {
+  font-size: 14px;
+  line-height: 1;
+  pointer-events: none;
+  width: 14px;
+  height: 14px;
+}
+
+/* Invisible Hit Zone (44px target) */
+.drag-handle::after {
+  content: '';
+  position: absolute;
+  inset: -15px; 
+  border-radius: 50%;
+}
+
+/* -----------------------------------------
+   THEME-SPECIFIC OVERRIDES
+   ----------------------------------------- */
+
+/* 1. iOS Glass & Soft Pop (Keep Standard) */
+/* No override needed, uses base variables perfectly */
+
+/* 2. Monolith (Industrial/Dark) */
+.theme-monolith .drag-handle {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #333;
+  box-shadow: none;
+  border-radius: 4px; /* Square handle for blocky theme */
+}
+
+/* 3. Midnight (Dark Capsule) */
+.theme-midnight .drag-handle {
+  background-color: #1a1a1a;
+  color: var(--thumb-text-active);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* 4. Ghost (Minimal/Transparent) */
+.theme-ghost .drag-handle {
+  background-color: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(4px);
+  box-shadow: none;
+}
+
+/* 5. Neumorphic (Soft 3D) */
+.theme-neumorphic .drag-handle {
+  background-color: #e0e0e0;
+  color: #666;
+  border: none;
+  box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff;
+}
+.thumb-wrapper.is-dragging.theme-neumorphic .drag-handle {
+  box-shadow: inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff; /* Pressed effect */
+  background-color: #e0e0e0;
+}
+
+/* 6. Sticker (Comic Style) */
+.theme-sticker .drag-handle {
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000; /* Hard shadow */
+  transform: rotate(5deg);
+}
+
+/* 7. Bubble Tea (Round) */
+.theme-bubble-tea .drag-handle {
+  top: 0; 
+  right: -5px;
+  background-color: #fff;
+  color: var(--thumb-text-active);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* -----------------------------------------
+   STATES & TRANSFORMS
+   ----------------------------------------- */
+
+/* Active / Dragging Cursor */
+.drag-handle:active,
+.thumb-wrapper.is-dragging .drag-handle {
+  cursor: grabbing;
+}
+
+/* Dragging Appearance (Global Highlight) */
+/* Note: Neumorphic has its own override above */
+.thumb-wrapper:not(.theme-neumorphic):not(.theme-monolith).is-dragging .drag-handle {
+  background-color: #2563EB;
+  color: #fff;
+  border-color: #2563EB;
+  transform: scale(1.1);
+}
+
+/* Vertical Mode - Handle Position Adjustment */
+.thumb-wrapper.vertical-dock .drag-handle {
+  top: -10px;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.thumb-wrapper.vertical-dock.theme-bubble-tea .drag-handle {
+  right: 50%; /* Fix specific offset for bubble tea */
+}
+
+/* -----------------------------------------
+   ANIMATIONS
+   ----------------------------------------- */
+@keyframes handle-pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
