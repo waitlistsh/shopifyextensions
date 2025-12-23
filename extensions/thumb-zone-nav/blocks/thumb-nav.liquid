@@ -113,6 +113,10 @@
 
 
 <script>
+ document.addEventListener('shopify:block:change', (event) => {
+    const settings = event.detail; 
+    const root = document.documentElement;
+
   // 1. Haptic Feedback (Coarse pointer = Touchscreen only)
   function triggerHaptic() {
     if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) {
@@ -176,7 +180,38 @@
     if (type === 'menu') window.location.href = '/collections/all';
   };
 
-  // 4. Global Event Listener for Navigation
+  
+
+
+    // 4. Theme Editor Integration
+
+
+    
+    const wrapper = document.querySelector('.thumb-wrapper');
+
+    // Update CSS Variables dynamically
+   if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
+    if (settings.color_active) {
+      root.style.setProperty('--thumb-text-active', settings.color_active);
+      // Logic for inactive color (matching your Liquid logic)
+      root.style.setProperty('--thumb-text-inactive', settings.color_active + '80'); // Adding '80' for 50% opacity hex
+    }
+    if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
+    if (settings.text_size) root.style.setProperty('--thumb-text-size', settings.text_size + 'px');
+    if (settings.spacing_bottom) root.style.setProperty('--thumb-spacing-bottom', settings.spacing_bottom + 'px');
+    if (settings.menu_width) root.style.setProperty('--thumb-menu-width', settings.menu_width + '%');
+
+
+    // Update Theme Classes
+   if (settings.theme_selection) {
+      const wrapper = document.querySelector('.thumb-wrapper');
+      if (wrapper) {
+        wrapper.className = `thumb-wrapper theme-${settings.theme_selection}`;
+      }
+    }
+  });
+
+// 5. Global Event Listener for Navigation
   document.querySelectorAll('.thumb-link').forEach(link => {
     link.addEventListener('click', function(e) {
       const action = this.getAttribute('data-thumb-action');
@@ -210,31 +245,6 @@
 
 
 
-    // 5. Theme Editor Integration
-    document.addEventListener('shopify:block:select', (event) => {
-    // Logic when the block is selected in the editor
-    });
-
-    document.addEventListener('shopify:block:change', (event) => {
-    const settings = event.detail; // Access new settings without refresh
-    const root = document.documentElement;
-    const wrapper = document.querySelector('.thumb-wrapper');
-
-    // Update CSS Variables dynamically
-    if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
-    if (settings.color_active) root.style.setProperty('--thumb-text-active', settings.color_active);
-    if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
-  
-    // Update Theme Classes
-    if (settings.theme_selection) {
-    const navContainer = document.querySelector('.thumb-wrapper');
-    // Remove old theme classes and add new one
-    navContainer.className = `thumb-wrapper theme-${settings.theme_selection}`;
-    }
-    });
-
-
-    
   });
 
 
