@@ -1,0 +1,427 @@
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+{{ 'thumb-nav.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  :root {
+    --thumb-bg-color: {{ block.settings.bg_color }};
+    --thumb-bg-opacity: {{ block.settings.bg_opacity | default: 90 | divided_by: 100.0 }};
+    --thumb-text-active: {{ block.settings.color_active }};
+    --thumb-text-inactive: {{ block.settings.color_active | color_modify: 'alpha', 0.5 }}; 
+    --thumb-icon-size: {{ block.settings.icon_size }}px;
+    --thumb-text-size: {{ block.settings.text_size }}px;
+    --thumb-spacing-bottom: {{ block.settings.spacing_bottom }}px;
+    --thumb-menu-width: {{ block.settings.menu_width }}%;
+    --thumb-desktop-max: {{ block.settings.desktop_width | default: 600 }}px;
+  --thumb-scale: {{ block.settings.desktop_scale | default: 1.0 }};
+  }
+
+  {% if block.settings.enable_auto_dark %}
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* If the user chose a light BG, flip to Dark. If they chose dark, keep it dark. */
+        --thumb-bg-color: #121212; 
+        --thumb-text-active: #ffffff;
+        --thumb-text-inactive: rgba(255, 255, 255, 0.5);
+        --thumb-bg-opacity: 0.95;
+      }
+      
+      /* Specific override for the "Cutout" borders in Hot-Key and Badges */
+      .cart-badge, .hot-key-center .icon-box {
+        border-color: #121212 !important;
+      }
+      
+      /* Glass effect adjustment for dark mode */
+      .theme-ios .thumb-zone-nav {
+        background-color: rgba(30, 30, 30, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+  {% endif %}
+
+
+/* =========================================
+   VISIBILITY & DESKTOP WIDTH LOGIC
+   ========================================= */
+
+/* 1. Desktop Styles (Screens larger than 1024px) */
+@media screen and (min-width: 1025px) {
+  .thumb-wrapper {
+    /* Apply your custom desktop width and scale */
+    max-width: var(--thumb-desktop-max) !important;
+    transform: translateX(-50%) scale(var(--thumb-scale));
+    transform-origin: bottom center;
+  }
+
+  /* HIDE if the user selected Mobile or Mobile/Tablet only */
+  {% if block.settings.visibility_scope != 'all' %}
+    .thumb-wrapper { display: none !important; }
+  {% endif %}
+}
+
+/* 2. Tablet Styles (Between 481px and 1024px) */
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+  {% if block.settings.visibility_scope == 'mobile' %}
+    .thumb-wrapper { display: none !important; }
+  {% endif %}
+}
+
+/* 3. Mobile Styles (Under 480px) */
+/* Always visible on mobile by default */
+
+{% endstyle %}
+
+<div class="thumb-wrapper theme-{{ block.settings.theme_selection }}">
+  <div class="thumb-zone-nav">
+    {%- assign main_menu = linklists[block.settings.menu_source].links -%}
+    {%- assign icon_list = block.settings.icon_mapping | replace: ' ', '' | split: ',' -%}
+    {%- assign label_list = block.settings.custom_labels | split: ',' -%}
+    {%- assign url_list = block.settings.url_overrides | replace: ' ', '' | split: ',' -%}
+    
+
+    {%- if main_menu.size > 0 -%}
+      {%- for link in main_menu limit: 5 -%}
+        {%- assign index = forloop.index0 -%}
+        
+        {%- assign icon_name = icon_list[index] | default: 'link' | strip -%}
+        {%- assign custom_label = label_list[index] | strip -%}
+        {%- assign final_label = custom_label | default: link.title -%}
+        {%- assign label_down = final_label | downcase -%}
+        
+        {%- assign custom_url = url_list[index] | strip -%}
+        {%- assign final_url = custom_url | default: link.url -%}
+        
+       <a href="{{ final_url }}" 
+        class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path == final_url %}active{% endif %}"
+        {% if final_url contains '#' %}data-thumb-action="{{ final_url | remove: '#' }}"{% endif %}>
+          <div class="icon-box">
+             <i class="ri-{{ icon_name }}{% unless icon_name contains '-line' or icon_name contains '-fill' %}-line{% endunless %}"></i>
+             
+             {%- if block.settings.show_cart_count and label_down contains 'cart' -%}
+                {%- if cart.item_count > 0 -%}
+                  <span class="cart-badge">{{ cart.item_count }}</span>
+                {%- endif -%}
+             {%- endif -%}
+          </div>
+          {%- if block.settings.show_labels -%}
+            <span class="label">{{ final_label | truncate: 12, '..' }}</span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+
+<script>
+  // 1. Haptic Feedback (Coarse pointer = Touchscreen only)
+  function triggerHaptic() {
+    if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) {
+      navigator.vibrate(12);
+    }
+  }
+
+  // 2. Real-time Cart Update Listener
+  // Listens for any 'change' in the document (like qty selectors) to update badge
+  document.addEventListener('change', function() {
+    fetch(`${window.Shopify.routes.root}cart.js`)
+      .then(response => response.json())
+      .then(cart => {
+        const badges = document.querySelectorAll('[data-thumb-cart-count]');
+        badges.forEach(badge => {
+          badge.textContent = cart.item_count;
+          badge.style.display = cart.item_count > 0 ? 'flex' : 'none';
+        });
+      })
+      .catch(error => console.error('Thumb-Nav Cart Sync Error:', error));
+  });
+
+  // 3. Universal Action Trigger (The Big Update)
+  const triggerUniversalAction = (type) => {
+    let selectors = [];
+    
+    // Custom user settings from Liquid schema (if provided)
+    const customSearch = "{{ block.settings.custom_search_selector }}";
+    const customMenu = "{{ block.settings.custom_menu_selector }}";
+
+    if (type === 'search') {
+      selectors = [
+        customSearch, // User override first
+        '[data-action="toggle-search"]', // Horizon / Maestrooo
+        '.header__search-toggle',        // Horizon alternate
+        '.search-modal__trigger',        // Dawn / Shopify
+        '.header__icon--search',         // Prestige / Impact
+        '[href="/search"]'               // Generic fallback
+      ].filter(s => s); // Remove empty strings
+    } else if (type === 'menu') {
+      selectors = [
+        customMenu,   // User override first
+        '[data-action="open-drawer"]',   // Horizon
+        '[aria-controls="mobile-menu"]', // Generic ARIA
+        '.header__icon--menu',           // Dawn
+        '.menu-drawer-container summary' // Shopify default
+      ].filter(s => s);
+    }
+
+    // Try to find and click the first valid theme toggle
+    for (let selector of selectors) {
+      const el = document.querySelector(selector);
+      if (el && typeof el.click === 'function') {
+        el.click();
+        return true; 
+      }
+    }
+
+    // Fallback: If no drawer found, go to the actual page
+    if (type === 'search') window.location.href = '/search';
+    if (type === 'menu') window.location.href = '/collections/all';
+  };
+
+  // 4. Global Event Listener for Navigation
+  document.querySelectorAll('.thumb-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      const action = this.getAttribute('data-thumb-action');
+      
+      // If it's a special action keyword, stop the normal link behavior
+      if (action) {
+        e.preventDefault();
+        
+        switch (action) {
+          case 'search':
+          case 'menu':
+            triggerUniversalAction(action);
+            break;
+          case 'top':
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            break;
+          case 'back':
+            window.history.back();
+            break;
+          case 'share':
+            if (navigator.share) {
+              navigator.share({ title: document.title, url: window.location.href });
+            }
+            break;
+        }
+      }
+
+      // Always trigger haptic on click
+      triggerHaptic();
+    });
+  });
+
+
+
+
+
+</script>
+
+
+{% schema %}
+{
+  "name": "Thumb-Zone Menu Pro",
+  "target": "body",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Source & Content"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_source",
+      "label": "Select Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "icon_mapping",
+      "label": "Icon Names",
+      "default": "home-5, search, shopping-bag-3, user, customer-service",
+      "info": "Separate with commas. [Find icon names here](https://remixicon.com/)"
+    },
+    {
+      "type": "text",
+      "id": "custom_labels",
+      "label": "Custom Labels (Optional)",
+      "placeholder": "Home, Shop, Cart, Me, Help",
+      "info": "Leave blank to use Menu Titles."
+    },
+    {
+      "type": "text",
+      "id": "url_overrides",
+      "label": "Link Overrides (Optional)",
+      "info": "Example: /pages,/about,/collections,/cart",
+      "placeholder": "/link1,/link2,/link3,/link4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Text Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_count",
+      "label": "Show Cart Count Badge",
+      "default": true
+    },
+    {
+      "type": "checkbox","id": "enable_auto_dark",
+      "label": "Enable Auto Dark Mode",
+      "default": true,
+      "info": "Automatically flips colors when the user's phone is in Dark Mode."
+    },
+
+
+    {
+      "type": "select",
+      "id": "visibility_scope",
+      "label": "Display Device Scope",
+      "options": [
+    { "value": "mobile", "label": "Mobile Only" },
+    { "value": "mobile_tablet", "label": "Mobile & Tablet" },
+    { "value": "all", "label": "All Devices (Including Desktop)" }
+            ],
+      "default": "mobile_tablet"
+    },
+
+    {
+      "type": "header",
+      "content": "Theme Selection"
+    },
+    {
+      "type": "select",
+      "id": "theme_selection",
+      "label": "Design Theme",
+      "options": [
+        { "group": "Originals", "value": "ios", "label": "iOS Glass" },
+        { "group": "Originals", "value": "midnight", "label": "Midnight Capsule" },
+        { "group": "Originals", "value": "action", "label": "Split Action" },
+        { "group": "Originals", "value": "text-only", "label": "Standard Text" },
+        { "group": "Luxury", "value": "monolith", "label": "Monolith (Minimal)" },
+        { "group": "Luxury", "value": "serif-chic", "label": "Serif Chic" },
+        { "group": "Luxury", "value": "ghost", "label": "The Ghost" },
+        { "group": "Luxury", "value": "pearl", "label": "Floating Pearl" },
+        { "group": "Conversion", "value": "hot-key", "label": "The Hot-Key (Big Center)" },
+        { "group": "Conversion", "value": "neumorphic", "label": "Neumorphic Glow" },
+        { "group": "Conversion", "value": "flash-sale", "label": "Flash Sale Gradient" },
+        { "group": "Conversion", "value": "stepper", "label": "The Stepper Bar" },
+        { "group": "Engagement", "value": "bubble-tea", "label": "Bubble Tea Circles" },
+        { "group": "Engagement", "value": "soft-pop", "label": "Soft-Pop Pastel" },
+        { "group": "Engagement", "value": "sticker", "label": "Sticker Die-Cut" },
+        { "group": "Engagement", "value": "socialite", "label": "Socialite (Scrolling)" },
+        { "group": "Utility", "value": "dark-pro", "label": "Dark Mode Pro" },
+        { "group": "Utility", "value": "grid", "label": "The Grid" },
+        { "group": "Utility", "value": "side-fan", "label": "The Side-Fan" },
+        { "group": "Utility", "value": "min-dot", "label": "Minimalist Dot" },
+        { "group": "Utility", "value": "border-top", "label": "Border Top Line" }
+      ],
+      "default": "ios"
+    },
+    {
+      "type": "header",
+      "content": "Visual Styling"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "bg_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Background Opacity",
+      "default": 90
+    },
+    {
+      "type": "color",
+      "id": "color_active",
+      "label": "Active Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon Size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 8,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "label": "Label Size",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "menu_width",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Bar Width",
+      "default": 95
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom Spacing",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Advanced / Theme Support"
+    },
+    {
+      "type": "text",
+      "id": "custom_search_selector",
+      "label": "Custom Search Selector",
+      "placeholder": ".header__search-toggle"
+    },
+    {
+      "type": "text",
+      "id": "custom_menu_selector",
+      "label": "Custom Menu Selector",
+      "placeholder": ".mobile-nav-trigger"
+    },
+    {
+  "type": "range",
+  "id": "desktop_width",
+  "min": 400,
+  "max": 1200,
+  "step": 50,
+  "unit": "px",
+  "label": "Desktop Max Width",
+  "default": 600
+},
+{
+  "type": "select",
+  "id": "desktop_scale",
+  "label": "Desktop Scale (Zoom)",
+  "options": [
+    { "value": "1.0", "label": "100% (Normal)" },
+    { "value": "1.1", "label": "110%" },
+    { "value": "1.2", "label": "120%" },
+    { "value": "1.3", "label": "130%" }
+  ],
+  "default": "1.0"
+}
+    
+  ]
+}
+{% endschema %}

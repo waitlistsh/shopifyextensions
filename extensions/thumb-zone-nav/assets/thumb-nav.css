@@ -1,0 +1,284 @@
+
+
+
+
+
+
+/* =========================================
+   BASE STYLES 
+   ========================================= */
+.thumb-wrapper {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  bottom: calc(var(--thumb-spacing-bottom, 20px) + env(safe-area-inset-bottom, 0px));
+  width: var(--thumb-menu-width, 95%);
+  max-width: 420px;
+  min-height: 60px;
+  transition: all 0.3s ease;
+}
+
+.thumb-zone-nav {
+  display: flex;
+  align-items: flex-end; 
+  transition: all 0.3s ease;
+  /* Support for older browsers */
+  padding-bottom: constant(safe-area-inset-bottom, 0px);
+}
+
+.thumb-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1; 
+  position: relative;
+  min-width: 0; 
+  padding-top: 5px;
+  color: var(--thumb-text-inactive);
+}
+
+.thumb-link.active {
+  color: var(--thumb-text-active);
+}
+
+.thumb-link .label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+  font-size: var(--thumb-text-size);
+}
+
+.icon-box {
+  height: calc(var(--thumb-icon-size) + 4px); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 2px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.thumb-link i {
+  font-size: var(--thumb-icon-size);
+  line-height: 1;
+}
+
+/* =========================================
+   THEME 1: iOS GLASS 
+   ========================================= */
+.theme-ios .thumb-zone-nav {
+  padding: 10px 0;
+  background-color: var(--thumb-bg-color); 
+  opacity: var(--thumb-bg-opacity);
+  /* Modern Glassmorphism blend */
+  background-color: color-mix(in srgb, var(--thumb-bg-color), transparent calc(100% - (var(--thumb-bg-opacity) * 100%)));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+}
+
+/* =========================================
+   THEME 2: MIDNIGHT CAPSULE 
+   ========================================= */
+.theme-midnight .thumb-zone-nav {
+  background: var(--thumb-bg-color);
+  border-radius: 100px;
+  padding: 14px 20px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+  align-items: center;
+}
+.theme-midnight .label { display: none; }
+.theme-midnight .thumb-link.active .icon-box::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 4px;
+  height: 4px;
+  background: var(--thumb-text-active);
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* =========================================
+   THEME 3: SPLIT ACTION (SAFE AREA PADDING)
+   ========================================= */
+.theme-action { 
+  bottom: 0 !important; 
+  width: 100% !important; 
+  left: 0; 
+  transform: none; 
+}
+.theme-action .thumb-zone-nav {
+  background: var(--thumb-bg-color);
+  border-top: 1px solid #eee;
+  /* SAFE AREA: Adds device padding to the existing 30px footer space */
+  padding: 10px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0; 
+  align-items: flex-end;
+}
+.theme-action .thumb-link.cart-link .icon-box {
+  background: #000;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 25px;
+  border: 4px solid var(--thumb-bg-color);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* =========================================
+   THEME 4: TEXT ONLY (SAFE AREA PADDING)
+   ========================================= */
+.theme-text-only { 
+  bottom: 0 !important; 
+  width: 100% !important; 
+  left: 0; 
+  transform: none; 
+}
+.theme-text-only .thumb-zone-nav {
+  justify-content: space-evenly;
+  /* SAFE AREA: Adds device padding to the footer */
+  padding: 18px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0;
+  background: var(--thumb-bg-color);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  align-items: center;
+}
+.theme-text-only .thumb-link i { display: none !important; }
+.theme-text-only .icon-box { height: 0; margin: 0; }
+.theme-text-only .thumb-link.active { text-decoration: underline; text-underline-offset: 4px; opacity: 1; }
+
+/* 1. Monolith */
+.theme-monolith .thumb-zone-nav { background: #000; border-radius: 0; padding: 15px 0; }
+.theme-monolith .thumb-link { color: #666; font-family: sans-serif; text-transform: uppercase; }
+.theme-monolith .thumb-link.active { color: #fff; }
+
+/* 2. Serif-Chic */
+.theme-serif-chic .thumb-zone-nav { background: var(--thumb-bg-color); border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; }
+.theme-serif-chic .label { font-family: serif; font-style: italic; color: #d4af37; }
+
+/* 3. The Ghost */
+.theme-ghost .thumb-zone-nav { background: transparent; backdrop-filter: none; box-shadow: none; }
+.theme-ghost .icon-box { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); color: #fff; }
+
+/* 4. Floating Pearl */
+.theme-pearl .thumb-zone-nav { background: #fff; border-radius: 50px; border: 0.5px solid #eee; padding: 5px 15px; }
+.theme-pearl .thumb-link.active { transform: translateY(-3px); }
+
+/* 5. The Hot-Key */
+.theme-hot-key .thumb-link:nth-child(3) .icon-box { 
+  background: var(--thumb-text-active); color: #fff !important; 
+  width: 55px; height: 55px; border-radius: 50%; margin-top: -35px; 
+  border: 5px solid var(--thumb-bg-color); box-shadow: 0 8px 15px rgba(0,0,0,0.2); 
+}
+
+/* 6. Neumorphic Glow */
+.theme-neumorphic .thumb-zone-nav { background: #e0e0e0; box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff; border-radius: 20px; }
+.theme-neumorphic .thumb-link.active .icon-box { color: var(--thumb-text-active); text-shadow: 0 0 8px var(--thumb-text-active); }
+
+/* 7. Flash Sale */
+.theme-flash-sale .thumb-zone-nav { background: linear-gradient(90deg, #ff416c, #ff4b2b); }
+.theme-flash-sale .thumb-link { color: rgba(255,255,255,0.7); }
+.theme-flash-sale .thumb-link.active { color: #fff; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+/* 8. The Stepper */
+.theme-stepper::before { content: ""; position: absolute; top: 0; left: 0; width: 60%; height: 3px; background: var(--thumb-text-active); z-index: 2; }
+.theme-stepper .thumb-zone-nav { background: var(--thumb-bg-color); padding-top: 15px; }
+
+/* 9. Bubble Tea */
+.theme-bubble-tea .thumb-zone-nav { background: transparent; gap: 8px; justify-content: center; }
+.theme-bubble-tea .thumb-link { background: #fff; border-radius: 50%; max-width: 60px; height: 60px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+
+/* 10. Soft-Pop */
+.theme-soft-pop .thumb-zone-nav { background: #f0f4f8; border-radius: 30px; }
+.theme-soft-pop .thumb-link.active { background: #fff; border-radius: 20px; margin: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+/* 11. The Sticker */
+.theme-sticker .icon-box { background: #fff; border: 2px solid #000; border-radius: 8px; transform: rotate(-3deg); }
+.theme-sticker .thumb-link:nth-child(even) .icon-box { transform: rotate(3deg); }
+
+/* 12. The Socialite */
+.theme-socialite .thumb-zone-nav { overflow-x: auto; justify-content: flex-start; padding: 10px 20px; -webkit-overflow-scrolling: touch; }
+.theme-socialite .thumb-link { min-width: 80px; flex: 0 0 auto; }
+
+
+/* 13. Dark Mode Pro */
+.theme-dark-pro .thumb-zone-nav { background: #121212; border-radius: 16px; border: 1px solid #333; }
+.theme-dark-pro .thumb-link.active { color: #00e5ff; }
+
+/* 14. The Grid */
+.theme-grid .thumb-zone-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: #fff; border-radius: 12px; }
+
+/* 15. The Side-Bar (Fan effect) */
+.theme-side-fan { left: 20px; transform: none; width: 60px; }
+.theme-side-fan .thumb-zone-nav { flex-direction: column-reverse; gap: 15px; }
+
+/* 16. Minimalist Dot */
+.theme-min-dot .label { display: none; }
+.theme-min-dot .thumb-link.active .label { display: block; font-size: 8px; }
+.theme-min-dot .thumb-link.active::after { content: "•"; position: absolute; bottom: 0; }
+
+/* 17. Border-Top */
+.theme-border-top .thumb-zone-nav { background: transparent; }
+.theme-border-top .thumb-link.active { border-top: 3px solid var(--thumb-text-active); padding-top: 2px; }
+
+
+
+
+
+
+
+/* =========================================
+   COMPONENTS: BADGES & ANIMATIONS
+   ========================================= */
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background-color: #FF3B30;
+  color: #FFFFFF;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--thumb-bg-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  pointer-events: none;
+  z-index: 10;
+  animation: badge-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badge-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  80% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.thumb-link:active .icon-box {
+  transform: scale(0.9);
+  transition: transform 0.1s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-monolith .thumb-zone-nav,
+  .theme-dark-pro .thumb-zone-nav {
+    background: #000000 !important; /* Pure black for OLED */
+    border-top: 1px solid #222;
+  }
+}
