@@ -5,7 +5,6 @@
   :root {
     /* 1. Inherit Store Fonts */
     --thumb-font-family: var(--font-body-family, sans-serif);
-
     /* 2. Your Existing Variables */
     --thumb-bg-color: {{ block.settings.bg_color }};
     --thumb-nav_opacity: {{ block.settings.nav_opacity | default: 90 | divided_by: 100.0 }};
@@ -28,7 +27,8 @@
   {% if block.settings.enable_auto_dark %}
     @media (prefers-color-scheme: dark) {
       :root {
-        /* If the user chose a light BG, flip to Dark. If they chose dark, keep it dark. */
+        /* If the user chose a light BG, flip to Dark.
+           If they chose dark, keep it dark. */
         --thumb-bg-color: #121212; 
         --thumb-text-active: #ffffff;
         --thumb-text-inactive: rgba(255, 255, 255, 0.5);
@@ -133,8 +133,40 @@
     const wrapper = document.querySelector('.thumb-wrapper');
     const spacerEnabled = {{ block.settings.enable_spacer | json }};
     const dragEnabled = {{ block.settings.enable_draggable | json }};
+    const STORAGE_KEY = 'thumb-zone-nav-position';
 
     if (!wrapper) return;
+
+    // --- 0. Restore Position from Storage ---
+    if (dragEnabled) {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        try {
+          const state = JSON.parse(savedState);
+          if (state.mode === 'bottom') {
+            // It's already at bottom by default CSS, just ensure classes are clean
+            wrapper.classList.remove('vertical-dock');
+          } else {
+            // Apply Side Docking
+            wrapper.classList.add('vertical-dock');
+            wrapper.style.bottom = 'auto';
+            wrapper.style.transform = 'translateY(-50%)';
+            wrapper.style.top = state.top;
+            wrapper.style.width = '60px';
+            
+            if (state.mode === 'left') {
+              wrapper.style.left = '10px';
+              wrapper.style.right = 'auto';
+            } else {
+              wrapper.style.left = 'auto';
+              wrapper.style.right = '10px';
+            }
+          }
+        } catch (e) {
+          console.error("ThumbZoneNav: Failed to load position", e);
+        }
+      }
+    }
 
     // --- 1. Spacer Logic (Push Content Up) ---
     function adjustBodyPadding() {
@@ -157,11 +189,9 @@
 
     // --- 2. Drag & Snap Logic (Handle Edition) ---
     const handle = wrapper.querySelector('.drag-handle');
-    
     if (dragEnabled && handle) {
       let isDragging = false;
       let startX, startY, initialLeft, initialTop;
-
       handle.style.touchAction = 'none'; 
       handle.style.cursor = 'grab';
 
@@ -183,7 +213,6 @@
         const rect = wrapper.getBoundingClientRect();
         initialLeft = rect.left;
         initialTop = rect.top;
-
         triggerHaptic();
       };
 
@@ -193,12 +222,11 @@
         
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
         const deltaX = clientX - startX;
         const deltaY = clientY - startY;
 
         wrapper.style.transform = 'none'; 
-        wrapper.style.bottom = 'auto'; 
+        wrapper.style.bottom = 'auto';
         wrapper.style.left = (initialLeft + deltaX) + 'px';
         wrapper.style.top = (initialTop + deltaY) + 'px';
       };
@@ -228,24 +256,40 @@
           wrapper.style.transform = 'translateX(-50%)';
           wrapper.style.width = 'var(--thumb-menu-width, 95%)';
           wrapper.style.right = 'auto';
+          
           if(spacerEnabled) adjustBodyPadding();
+          
+          // Save State
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: 'bottom' }));
+
         } else {
           // Snap Side
           wrapper.classList.add('vertical-dock');
           wrapper.style.bottom = 'auto';
           wrapper.style.transform = 'translateY(-50%)';
-          wrapper.style.top = (rect.top + (rect.height / 2)) + 'px';
+          const newTop = (rect.top + (rect.height / 2)) + 'px';
+          wrapper.style.top = newTop;
           wrapper.style.width = '60px';
+          
+          let savedMode = 'right';
 
           if (distToLeft < distToRight) {
             wrapper.style.left = '10px';
             wrapper.style.right = 'auto';
+            savedMode = 'left';
           } else {
             wrapper.style.left = 'auto';
             wrapper.style.right = '10px'; 
-            wrapper.style.left = (screenWidth - 70) + 'px'; 
+            // wrapper.style.left = (screenWidth - 70) + 'px'; // Cleaner to rely on right: 10px
+            savedMode = 'right';
           }
           document.body.style.paddingBottom = '0px';
+
+          // Save State
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
+            mode: savedMode, 
+            top: newTop 
+          }));
         }
       };
 
@@ -380,7 +424,8 @@
     });
     observer.observe(document.body, { attributes: true });
 
-  }); // End DOMContentLoaded
+  });
+  // End DOMContentLoaded
 </script>
 
 
