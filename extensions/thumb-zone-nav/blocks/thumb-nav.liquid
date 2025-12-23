@@ -207,6 +207,34 @@
       // Always trigger haptic on click
       triggerHaptic();
     });
+
+
+
+    // 5. Theme Editor Integration
+    document.addEventListener('shopify:block:select', (event) => {
+    // Logic when the block is selected in the editor
+    });
+
+    document.addEventListener('shopify:block:change', (event) => {
+    const settings = event.detail; // Access new settings without refresh
+    const root = document.documentElement;
+    const wrapper = document.querySelector('.thumb-wrapper');
+
+    // Update CSS Variables dynamically
+    if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
+    if (settings.color_active) root.style.setProperty('--thumb-text-active', settings.color_active);
+    if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
+  
+    // Update Theme Classes
+    if (settings.theme_selection) {
+    const navContainer = document.querySelector('.thumb-wrapper');
+    // Remove old theme classes and add new one
+    navContainer.className = `thumb-wrapper theme-${settings.theme_selection}`;
+    }
+    });
+
+
+    
   });
 
 
