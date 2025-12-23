@@ -5,11 +5,23 @@
   :root {
     /* 1. Inherit Store Fonts */
     --thumb-font-family: var(--font-body-family, sans-serif);
-    /* 2. Your Existing Variables */
-    --thumb-bg-color: {{ block.settings.bg_color }};
+
+    /* 2. Color Logic: Custom vs Inherited */
+    {% if block.settings.inherit_theme_colors %}
+      --thumb-bg-color: var(--gradient-background, var(--color-background, {{ block.settings.bg_color }}));
+      --thumb-text-active: var(--color-foreground, var(--color-text, {{ block.settings.color_active }}));
+      --thumb-text-inactive: color-mix(in srgb, var(--thumb-text-active), transparent 50%);
+    {% else %}
+      --thumb-bg-color: {{ block.settings.bg_color }};
+      --thumb-text-active: {{ block.settings.color_active }};
+      --thumb-text-inactive: {{ block.settings.color_active | color_modify: 'alpha', 0.5 }}; 
+    {% endif %}
+
+    /* 3. Ticker Colors */
+    --thumb-ticker-bg: {{ block.settings.ticker_bg }};
+    --thumb-ticker-text: {{ block.settings.ticker_text_color }};
+
     --thumb-nav_opacity: {{ block.settings.nav_opacity | default: 90 | divided_by: 100.0 }};
-    --thumb-text-active: {{ block.settings.color_active }};
-    --thumb-text-inactive: {{ block.settings.color_active | color_modify: 'alpha', 0.5 }}; 
     --thumb-icon-size: {{ block.settings.icon_size }}px;
     --thumb-text-size: {{ block.settings.text_size }}px;
     --thumb-spacing-bottom: {{ block.settings.spacing_bottom }}px;
@@ -18,416 +30,416 @@
     --thumb-scale: {{ block.settings.desktop_scale | default: 1.0 }};
   }
 
-  /* 3. Apply the inherited font to labels */
+  /* Base Styles */
   .thumb-link .label {
     font-family: var(--thumb-font-family) !important;
-    font-weight: 600; /* Often looks cleaner on mobile */
+    font-weight: 600; 
   }
 
+  /* FIX: Ensure Drag Handle stays centered and round */
+  .thumb-wrapper.vertical-dock.is-dragging .drag-handle {
+    transform: translateX(50%) scale(1.1) !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+  }
+
+  /* Ticker Styles */
+  .thumb-ticker {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--thumb-ticker-bg);
+    color: var(--thumb-ticker-text);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: -1;
+    opacity: 0;
+    pointer-events: none;
+    text-decoration: none;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .thumb-ticker.is-visible { opacity: 1; top: -38px; pointer-events: auto; }
+  .thumb-wrapper.vertical-dock .thumb-ticker { display: none !important; }
+
+  /* --- STICKY ATC BUTTON (UPDATED) --- */
+  .thumb-link.is-sticky-atc .icon-box {
+    background: var(--thumb-text-active) !important;
+    color: var(--thumb-bg-color) !important;
+    border: 3px solid var(--thumb-bg-color);
+    border-radius: 50%;
+    /* BIGGER SCALE */
+    transform: scale(1.35); 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    /* ATTENTION ANIMATION */
+    animation: thumb-pulse 2s infinite;
+  }
+  
+  /* Stop pulse when dragging */
+  .thumb-wrapper.is-dragging .thumb-link.is-sticky-atc .icon-box { animation: none; }
+
+  .thumb-link.is-sticky-atc i { 
+    font-size: 16px; /* Larger Icon */
+    margin-bottom: 0; 
+  }
+  
+  .thumb-link.is-sticky-atc .atc-text { 
+    font-size: 8px; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    line-height: 1;
+    letter-spacing: 0.5px;
+  }
+  
+  .thumb-link.is-sticky-atc .label { display: none; }
+
+  @keyframes thumb-pulse {
+    0% { transform: scale(1.35); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
+    70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+    100% { transform: scale(1.35); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+  }
+
+  /* Recent Views Drawer */
+  .thumb-recent-drawer {
+    display: none; 
+    position: fixed;
+    bottom: calc(var(--thumb-spacing-bottom) + 80px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: 90%;
+    max-width: 400px;
+    background: var(--thumb-bg-color);
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 2147483646;
+    border: 1px solid rgba(0,0,0,0.05);
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .thumb-recent-drawer.is-open { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
+  .recent-item { flex: 0 0 70px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--thumb-text-active); font-size: 10px; text-align: center; }
+  .recent-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; margin-bottom: 5px; border: 1px solid rgba(0,0,0,0.1); }
+
+  /* Auto Dark Mode Overrides */
   {% if block.settings.enable_auto_dark %}
     @media (prefers-color-scheme: dark) {
       :root {
-        /* If the user chose a light BG, flip to Dark.
-           If they chose dark, keep it dark. */
         --thumb-bg-color: #121212; 
         --thumb-text-active: #ffffff;
         --thumb-text-inactive: rgba(255, 255, 255, 0.5);
         --thumb-nav_opacity: 0.95;
       }
-      
-      /* Specific override for the "Cutout" borders in Hot-Key and Badges */
-      .cart-badge, .hot-key-center .icon-box {
+      .cart-badge, .hot-key-center .icon-box, .thumb-link.is-sticky-atc .icon-box {
         border-color: #121212 !important;
       }
-      
-      /* Glass effect adjustment for dark mode */
       .theme-ios .thumb-zone-nav {
         background-color: rgba(30, 30, 30, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
+      .thumb-recent-drawer { border-color: #333; }
     }
   {% endif %}
 
-
-  /* =========================================
-    VISIBILITY & DESKTOP WIDTH LOGIC
-    ========================================= */
-
-  /* 1. Desktop Styles (Screens larger than 1024px) */
+  /* Desktop Visibility */
   @media screen and (min-width: 1025px) {
-    .thumb-wrapper {
-      /* Apply your custom desktop width and scale */
-      max-width: var(--thumb-desktop-max) !important;
-      transform: translateX(-50%) scale(var(--thumb-scale));
-      transform-origin: bottom center;
-    }
-
-    /* HIDE if the user selected Mobile or Mobile/Tablet only */
-    {% if block.settings.visibility_scope != 'all' %}
-      .thumb-wrapper { display: none !important; }
-    {% endif %}
+    .thumb-wrapper { max-width: var(--thumb-desktop-max) !important; transform: translateX(-50%) scale(var(--thumb-scale)); transform-origin: bottom center; }
+    {% if block.settings.visibility_scope != 'all' %} .thumb-wrapper { display: none !important; } {% endif %}
   }
-
-  /* 2. Tablet Styles (Between 481px and 1024px) */
   @media screen and (min-width: 481px) and (max-width: 1024px) {
-    {% if block.settings.visibility_scope == 'mobile' %}
-      .thumb-wrapper { display: none !important; }
-    {% endif %}
+    {% if block.settings.visibility_scope == 'mobile' %} .thumb-wrapper { display: none !important; } {% endif %}
   }
+{% endstyle %}
 
-  /* 3. Mobile Styles (Under 480px) */
-  /* Always visible on mobile by default */
+<div class="thumb-wrapper theme-{{ block.settings.theme_selection }} {% if block.settings.enable_spacer %}has-spacer{% endif %}">
+  {% if block.settings.enable_ticker and block.settings.ticker_text != blank %}
+    <a href="{{ block.settings.ticker_link | default: '#' }}" class="thumb-ticker" {% if block.settings.ticker_link == blank %}style="pointer-events: none;"{% endif %}>
+      {{ block.settings.ticker_text }}
+    </a>
+  {% endif %}
 
-  {% endstyle %}
-
-  <div class="thumb-wrapper theme-{{ block.settings.theme_selection }} {% if block.settings.enable_spacer %}has-spacer{% endif %}">
   {% if block.settings.enable_draggable %}
-    <div class="drag-handle">
+    <div class="drag-handle" role="button" aria-label="Move navigation">
       <i class="ri-drag-move-2-fill"></i>
     </div>
   {% endif %}
-    <div class="thumb-zone-nav">
-      {%- assign main_menu = linklists[block.settings.menu_source].links -%}
-      {%- assign icon_list = block.settings.icon_mapping | replace: ' ', '' | split: ',' -%}
-      {%- assign label_list = block.settings.custom_labels | split: ',' -%}
-      {%- assign url_list = block.settings.url_overrides | replace: ' ', '' | split: ',' -%}
-      
+  
+  <div class="thumb-zone-nav">
+    {%- assign main_menu = linklists[block.settings.menu_source].links -%}
+    {%- assign icon_list = block.settings.icon_mapping | replace: ' ', '' | split: ',' -%}
+    {%- assign label_list = block.settings.custom_labels | split: ',' -%}
+    {%- assign url_list = block.settings.url_overrides | replace: ' ', '' | split: ',' -%}
 
-      {%- if main_menu.size > 0 -%}
-        {%- for link in main_menu limit: 5 -%}
-          {%- assign index = forloop.index0 -%}
-          
-          {%- assign icon_name = icon_list[index] | default: 'link' | strip -%}
-          {%- assign custom_label = label_list[index] | strip -%}
-          {%- assign final_label = custom_label | default: link.title -%}
-          {%- assign label_down = final_label | downcase -%}
-          
-          {%- assign custom_url = url_list[index] | strip -%}
-          {%- assign final_url = custom_url | default: link.url -%}
-          
+    {%- if main_menu.size > 0 -%}
+      {%- for link in main_menu limit: 5 -%}
+        {%- assign index = forloop.index0 -%}
+        {%- assign icon_name = icon_list[index] | default: 'link' | strip -%}
+        {%- assign custom_label = label_list[index] | strip -%}
+        {%- assign final_label = custom_label | default: link.title -%}
+        {%- assign label_down = final_label | downcase -%}
+        {%- assign final_url = url_list[index] | strip | default: link.url -%}
+        
+        {%- assign is_center_index = false -%}
+        {%- if forloop.length == 5 and index == 2 -%}{%- assign is_center_index = true -%}{%- endif -%}
+        {%- if forloop.length == 3 and index == 1 -%}{%- assign is_center_index = true -%}{%- endif -%}
+
+        {%- assign show_sticky_atc = false -%}
+        {%- if block.settings.enable_sticky_atc and request.page_type == 'product' and is_center_index -%}
+          {%- assign show_sticky_atc = true -%}
+        {%- endif -%}
+
         <a href="{{ final_url }}" 
-          class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path contains final_url %}active{% endif %}"
-          {% if final_url contains '#' %}data-thumb-action="{{ final_url | remove: '#' }}"{% endif %}>
-            <div class="icon-box">
+           class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path contains final_url %}active{% endif %} {% if show_sticky_atc %}is-sticky-atc{% endif %}"
+           {% if show_sticky_atc %}
+             data-thumb-action="add-to-cart"
+           {% elsif label_down contains 'history' or label_down contains 'recent' %}
+             data-thumb-action="history"
+           {% elsif final_url contains '#' %}
+             data-thumb-action="{{ final_url | remove: '#' }}"
+           {% endif %}>
+          <div class="icon-box">
+            {% if show_sticky_atc %}
+              <i class="ri-shopping-cart-2-fill"></i>
+              <span class="atc-text">{{ block.settings.sticky_atc_label | default: "ADD +" }}</span>
+            {% else %}
               <i class="ri-{{ icon_name }}{% unless icon_name contains '-line' or icon_name contains '-fill' %}-line{% endunless %}"></i>
-              
               {%- if block.settings.show_cart_count and label_down contains 'cart' -%}
-                  {%- if cart.item_count > 0 -%}
-                    <span class="cart-badge">{{ cart.item_count }}</span>
-                  {%- endif -%}
+                  <span class="cart-badge">{{ cart.item_count }}</span>
               {%- endif -%}
-            </div>
-            {%- if block.settings.show_labels -%}
-              <span class="label">{{ final_label | truncate: 12, '..' }}</span>
-            {%- endif -%}
-          </a>
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
+            {% endif %}
+          </div>
+          {%- if block.settings.show_labels -%}
+            <span class="label">
+              {% if show_sticky_atc %}Buy{% else %}{{ final_label | truncate: 12, '..' }}{% endif %}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
   </div>
+</div>
 
+<div class="thumb-recent-drawer" id="thumb-recent-drawer"></div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // --- INITIALIZATION & SETTINGS ---
     const wrapper = document.querySelector('.thumb-wrapper');
     const spacerEnabled = {{ block.settings.enable_spacer | json }};
     const dragEnabled = {{ block.settings.enable_draggable | json }};
+    const tickerTrigger = "{{ block.settings.ticker_trigger }}";
     const STORAGE_KEY = 'thumb-zone-nav-position';
 
     if (!wrapper) return;
 
-    // --- 0. Restore Position from Storage ---
+    // 0. HISTORY
+    {% if request.page_type == 'product' %}
+      try {
+        const historyKey = 'thumb-recent-views';
+        const currentProduct = {
+          id: {{ product.id }},
+          title: "{{ product.title | escape }}",
+          url: "{{ product.url }}",
+          img: "{{ product.featured_image | image_url: width: 100 }}"
+        };
+        let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+        history = history.filter(p => p.id !== currentProduct.id);
+        history.unshift(currentProduct);
+        if (history.length > 6) history.pop();
+        localStorage.setItem(historyKey, JSON.stringify(history));
+      } catch(e) {}
+    {% endif %}
+
+    // 1. TICKER
+    const ticker = document.querySelector('.thumb-ticker');
+    if (ticker) {
+      let shouldShow = false;
+      const hasVisited = localStorage.getItem('thumb-ticker-seen');
+      
+      if (tickerTrigger === 'always') shouldShow = true;
+      else if (tickerTrigger === 'first_visit' && !hasVisited) {
+        shouldShow = true; localStorage.setItem('thumb-ticker-seen', 'true');
+      } else if (tickerTrigger === 'cart_has_items' && {{ cart.item_count }} > 0) {
+        shouldShow = true;
+      }
+
+      if (shouldShow) setTimeout(() => ticker.classList.add('is-visible'), 1500); 
+    }
+
+    // 2. ACTIONS
+    const recentDrawer = document.getElementById('thumb-recent-drawer');
+    function toggleRecentDrawer() {
+      if(recentDrawer.classList.contains('is-open')) {
+        recentDrawer.classList.remove('is-open');
+        setTimeout(() => { recentDrawer.style.display = 'none'; }, 300);
+        return;
+      }
+      const history = JSON.parse(localStorage.getItem('thumb-recent-views') || '[]');
+      if(history.length === 0) recentDrawer.innerHTML = '<div style="padding:10px; opacity:0.6; font-size:12px;">No recently viewed products.</div>';
+      else recentDrawer.innerHTML = history.map(p => `<a href="${p.url}" class="recent-item"><img src="${p.img}" alt="${p.title}" /><span>${p.title.substring(0, 10)}..</span></a>`).join('');
+      
+      recentDrawer.style.display = 'flex';
+      setTimeout(() => recentDrawer.classList.add('is-open'), 10);
+      document.addEventListener('click', function close(e) {
+        if(!recentDrawer.contains(e.target) && !e.target.closest('[data-thumb-action="history"]')) {
+          recentDrawer.classList.remove('is-open');
+          setTimeout(() => { recentDrawer.style.display = 'none'; }, 300);
+          document.removeEventListener('click', close);
+        }
+      });
+    }
+
+    function triggerAddToCart() {
+      const mainBtn = document.querySelector('form[action*="/cart/add"] button[type="submit"], .product-form__submit, [name="add"]');
+      if(mainBtn) { mainBtn.click(); triggerHaptic(); return; }
+      
+      {% if product.selected_or_first_available_variant %}
+      const formData = new FormData();
+      formData.append('id', {{ product.selected_or_first_available_variant.id }});
+      formData.append('quantity', 1);
+      fetch(window.Shopify.routes.root + 'cart/add.js', { method: 'POST', body: formData })
+      .then(r => r.json()).then(() => {
+        updateCartBadges();
+        const cartIcon = document.querySelector('.header__icon--cart, #cart-icon-bubble');
+        if(cartIcon) cartIcon.click();
+      }).catch(e => console.error(e));
+      {% endif %}
+    }
+
+    // 3. DRAG (Fixed)
     if (dragEnabled) {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        try {
-          const state = JSON.parse(savedState);
-          if (state.mode === 'bottom') {
-            // It's already at bottom by default CSS, just ensure classes are clean
-            wrapper.classList.remove('vertical-dock');
-          } else {
-            // Apply Side Docking
-            wrapper.classList.add('vertical-dock');
-            wrapper.style.bottom = 'auto';
-            wrapper.style.transform = 'translateY(-50%)';
-            wrapper.style.top = state.top;
-            wrapper.style.width = '60px';
-            
-            if (state.mode === 'left') {
-              wrapper.style.left = '10px';
-              wrapper.style.right = 'auto';
-            } else {
-              wrapper.style.left = 'auto';
-              wrapper.style.right = '10px';
+      const handle = wrapper.querySelector('.drag-handle');
+      if (handle) {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            if (state.mode !== 'bottom') {
+              wrapper.classList.add('vertical-dock');
+              wrapper.style.bottom = 'auto';
+              wrapper.style.transform = 'translateY(-50%)';
+              wrapper.style.top = state.top;
+              wrapper.style.width = '60px';
+              if (state.mode === 'left') { wrapper.style.left = '10px'; wrapper.style.right = 'auto'; }
+              else { wrapper.style.left = 'auto'; wrapper.style.right = '10px'; }
             }
-          }
-        } catch (e) {
-          console.error("ThumbZoneNav: Failed to load position", e);
+          } catch (e) {}
         }
-      }
-    }
 
-    // --- 1. Spacer Logic (Push Content Up) ---
-    function adjustBodyPadding() {
-      if (!spacerEnabled) return;
-      // Only add padding if docked at bottom (not side)
-      if (!wrapper.classList.contains('vertical-dock')) {
-        const height = wrapper.offsetHeight;
-        const spacing = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-spacing-bottom')) || 20;
-        document.body.style.paddingBottom = (height + spacing) + 'px';
-      } else {
-        document.body.style.paddingBottom = '0px';
-      }
-    }
-    
-    // Run spacer on load
-    if (spacerEnabled) {
-      adjustBodyPadding();
-      window.addEventListener('resize', adjustBodyPadding);
-    }
+        let isDragging = false, offset = {x:0, y:0};
+        handle.style.touchAction = 'none'; handle.style.cursor = 'grab';
 
-    // --- 2. Drag & Snap Logic (Handle Edition) ---
-    const handle = wrapper.querySelector('.drag-handle');
-    if (dragEnabled && handle) {
-      let isDragging = false;
-      let startX, startY, initialLeft, initialTop;
-      handle.style.touchAction = 'none'; 
-      handle.style.cursor = 'grab';
-
-      const onStart = (e) => {
-        // Prevent default only for the handle to stop scrolling
-        if (e.cancelable) e.preventDefault();
-        e.stopPropagation();
-
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        isDragging = true;
-        startX = clientX;
-        startY = clientY;
-
-        wrapper.classList.add('is-dragging');
-        handle.style.cursor = 'grabbing';
-
-        const rect = wrapper.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-        triggerHaptic();
-      };
-
-      const onMove = (e) => {
-        if (!isDragging) return;
-        if (e.cancelable) e.preventDefault(); 
-        
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const deltaX = clientX - startX;
-        const deltaY = clientY - startY;
-
-        wrapper.style.transform = 'none'; 
-        wrapper.style.bottom = 'auto';
-        wrapper.style.left = (initialLeft + deltaX) + 'px';
-        wrapper.style.top = (initialTop + deltaY) + 'px';
-      };
-
-      const onEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        
-        wrapper.classList.remove('is-dragging');
-        handle.style.cursor = 'grab';
-
-        // Snap Logic
-        const rect = wrapper.getBoundingClientRect();
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        
-        const distToBottom = screenHeight - rect.bottom;
-        const distToLeft = rect.left;
-        const distToRight = screenWidth - rect.right;
-
-        // Snap to Bottom if close (within 150px)
-        if (distToBottom < 150 && distToBottom < distToLeft && distToBottom < distToRight) {
-          wrapper.classList.remove('vertical-dock');
-          wrapper.style.top = 'auto';
-          wrapper.style.bottom = 'calc(var(--thumb-spacing-bottom, 20px) + env(safe-area-inset-bottom, 0px))';
-          wrapper.style.left = '50%';
-          wrapper.style.transform = 'translateX(-50%)';
-          wrapper.style.width = 'var(--thumb-menu-width, 95%)';
-          wrapper.style.right = 'auto';
+        const onStart = (e) => {
+          if (e.cancelable) e.preventDefault(); e.stopPropagation();
+          wrapper.style.transition = 'none'; 
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const rect = wrapper.getBoundingClientRect();
+          offset.x = clientX - rect.left; offset.y = clientY - rect.top;
           
-          if(spacerEnabled) adjustBodyPadding();
-          
-          // Save State
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: 'bottom' }));
+          isDragging = true; wrapper.classList.add('is-dragging'); handle.style.cursor = 'grabbing';
+          wrapper.style.bottom = 'auto'; wrapper.style.right = 'auto'; wrapper.style.transform = 'none'; wrapper.style.margin = '0';
+          wrapper.style.width = rect.width + 'px'; wrapper.style.left = rect.left + 'px'; wrapper.style.top = rect.top + 'px';
+          triggerHaptic();
+        };
 
-        } else {
-          // Snap Side
-          wrapper.classList.add('vertical-dock');
-          wrapper.style.bottom = 'auto';
-          wrapper.style.transform = 'translateY(-50%)';
-          const newTop = (rect.top + (rect.height / 2)) + 'px';
-          wrapper.style.top = newTop;
-          wrapper.style.width = '60px';
-          
-          let savedMode = 'right';
+        const onMove = (e) => {
+          if (!isDragging) return; if (e.cancelable) e.preventDefault(); 
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          wrapper.style.left = (clientX - offset.x) + 'px'; wrapper.style.top = (clientY - offset.y) + 'px';
+        };
 
-          if (distToLeft < distToRight) {
-            wrapper.style.left = '10px';
-            wrapper.style.right = 'auto';
-            savedMode = 'left';
+        const onEnd = () => {
+          if (!isDragging) return;
+          isDragging = false; wrapper.classList.remove('is-dragging'); handle.style.cursor = 'grab'; wrapper.style.transition = ''; 
+          const rect = wrapper.getBoundingClientRect();
+          const distToBottom = window.innerHeight - rect.bottom;
+          if (distToBottom < 150) {
+            wrapper.classList.remove('vertical-dock');
+            wrapper.style.top = 'auto'; wrapper.style.bottom = 'calc(var(--thumb-spacing-bottom, 20px) + env(safe-area-inset-bottom, 0px))';
+            wrapper.style.left = '50%'; wrapper.style.transform = 'translateX(-50%)'; wrapper.style.width = 'var(--thumb-menu-width, 95%)'; wrapper.style.right = 'auto';
+            if(spacerEnabled) adjustBodyPadding();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: 'bottom' }));
           } else {
-            wrapper.style.left = 'auto';
-            wrapper.style.right = '10px'; 
-            // wrapper.style.left = (screenWidth - 70) + 'px'; // Cleaner to rely on right: 10px
-            savedMode = 'right';
+            wrapper.classList.add('vertical-dock');
+            wrapper.style.bottom = 'auto'; wrapper.style.transform = 'translateY(-50%)';
+            const newTop = (rect.top + (rect.height / 2)) + 'px'; wrapper.style.top = newTop; wrapper.style.width = '60px';
+            let savedMode = (rect.left < window.innerWidth / 2) ? 'left' : 'right';
+            if (savedMode === 'left') { wrapper.style.left = '10px'; wrapper.style.right = 'auto'; } else { wrapper.style.left = 'auto'; wrapper.style.right = '10px'; }
+            document.body.style.paddingBottom = '0px';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: savedMode, top: newTop }));
           }
-          document.body.style.paddingBottom = '0px';
-
-          // Save State
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
-            mode: savedMode, 
-            top: newTop 
-          }));
-        }
-      };
-
-      // Events
-      handle.addEventListener('touchstart', onStart, {passive: false});
-      handle.addEventListener('mousedown', onStart);
-      document.addEventListener('touchmove', onMove, {passive: false});
-      document.addEventListener('touchend', onEnd);
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onEnd);
-    }
-
-    // --- 3. Theme Editor Integration (Fluid Updates) ---
-    document.addEventListener('shopify:block:change', (event) => {
-      const settings = event.detail;
-      const root = document.documentElement;
-      
-      if (settings.nav_opacity !== undefined) root.style.setProperty('--thumb-nav_opacity', settings.nav_opacity / 100.0);
-      if (settings.bg_color) root.style.setProperty('--thumb-bg-color', settings.bg_color);
-      if (settings.color_active) {
-        root.style.setProperty('--thumb-text-active', settings.color_active);
-        root.style.setProperty('--thumb-text-inactive', settings.color_active + '80');
-      }
-      if (settings.icon_size) root.style.setProperty('--thumb-icon-size', settings.icon_size + 'px');
-      if (settings.text_size) root.style.setProperty('--thumb-text-size', settings.text_size + 'px');
-      if (settings.spacing_bottom !== undefined) root.style.setProperty('--thumb-spacing-bottom', settings.spacing_bottom + 'px');
-      if (settings.menu_width) root.style.setProperty('--thumb-menu-width', settings.menu_width + '%');
-      if (settings.theme_selection) {
-        wrapper.className = `thumb-wrapper theme-${settings.theme_selection} ${wrapper.classList.contains('vertical-dock') ? 'vertical-dock' : ''}`;
-      }
-      
-      // Re-run spacer check if settings change
-      if(spacerEnabled) adjustBodyPadding();
-    });
-
-    // --- 4. Haptic Feedback Helper ---
-    function triggerHaptic() {
-      if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) {
-        navigator.vibrate(12);
+        };
+        handle.addEventListener('touchstart', onStart, {passive: false}); handle.addEventListener('mousedown', onStart);
+        document.addEventListener('touchmove', onMove, {passive: false}); document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchend', onEnd); document.addEventListener('mouseup', onEnd);
       }
     }
 
-    // --- 5. Real-time Cart Update Listener ---
+    // 4. UTILS
+    function adjustBodyPadding() {
+      if (spacerEnabled && !wrapper.classList.contains('vertical-dock')) {
+        const height = wrapper.offsetHeight; const spacing = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-spacing-bottom')) || 20;
+        document.body.style.paddingBottom = (height + spacing) + 'px';
+      } else { document.body.style.paddingBottom = '0px'; }
+    }
+    adjustBodyPadding(); window.addEventListener('resize', adjustBodyPadding);
+
+    function triggerHaptic() { if ("vibrate" in navigator && window.matchMedia("(pointer: coarse)").matches) navigator.vibrate(10); }
+
     function updateCartBadges() {
-      fetch(`${window.Shopify.routes.root}cart.js`)
-        .then(response => response.json())
-        .then(cart => {
-          const badges = document.querySelectorAll('.cart-badge');
-          badges.forEach(badge => {
-            badge.textContent = cart.item_count;
-            badge.style.display = cart.item_count > 0 ? 'flex' : 'none';
-          });
-        })
-        .catch(error => console.error('Thumb-Nav Cart Sync Error:', error));
+      fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json()).then(c => {
+        document.querySelectorAll('.cart-badge').forEach(b => { b.textContent = c.item_count; b.style.display = c.item_count > 0 ? 'flex' : 'none'; });
+        if (tickerTrigger === 'cart_has_items' && ticker) {
+           if (c.item_count > 0) ticker.classList.add('is-visible'); else ticker.classList.remove('is-visible');
+        }
+      }).catch(e => {});
     }
-    // Listen for global change events (often fired by themes after ajax cart add)
-    document.addEventListener('change', updateCartBadges);
-    // Also run once on load
-    updateCartBadges();
+    document.addEventListener('change', updateCartBadges); updateCartBadges();
 
-    // --- 6. Universal Action Trigger (Drawers) ---
     const triggerUniversalAction = (type) => {
-      let selectors = [];
       const customSearch = "{{ block.settings.custom_search_selector }}";
       const customMenu = "{{ block.settings.custom_menu_selector }}";
-
-      if (type === 'search') {
-        selectors = [customSearch, '[data-action="toggle-search"]', '.header__search-toggle', '.search-modal__trigger', '.header__icon--search', '[href="/search"]'].filter(s => s);
-      } else if (type === 'menu') {
-        selectors = [customMenu, '[data-action="open-drawer"]', '[aria-controls="mobile-menu"]', '.header__icon--menu', '.menu-drawer-container summary'].filter(s => s);
-      } else if (type === 'cart') {
-        selectors = ['#cart-icon-bubble', '[aria-controls="CartDrawer"]', '[aria-controls="cart-drawer"]', '.header__icon--cart', '[data-action="open-cart"]', '.js-cart-trigger'];
-      }
-
-      for (let selector of selectors) {
-        const el = document.querySelector(selector);
-        if (el) { el.click(); return true; }
-      }
-
-      // Fallbacks
+      let selectors = [];
+      if (type === 'search') selectors = [customSearch, '.header__search-toggle', 'details-modal summary', '.header__icon--search', '[href="/search"]'];
+      if (type === 'menu') selectors = [customMenu, '[data-action="open-drawer"]', 'summary.header__icon--menu', '.header__icon--menu'];
+      if (type === 'cart') selectors = ['#cart-icon-bubble', '[aria-controls="CartDrawer"]', '.header__icon--cart'];
+      const el = selectors.find(s => s && document.querySelector(s));
+      if (el) { document.querySelector(el).click(); return true; }
       if (type === 'search') window.location.href = '/search';
       if (type === 'menu') window.location.href = '/collections/all';
       if (type === 'cart') window.location.href = '/cart';
     };
 
-    // --- 7. Global Event Listener for Navigation ---
     document.querySelectorAll('.thumb-link').forEach(link => {
       link.addEventListener('click', function(e) {
         const action = this.getAttribute('data-thumb-action');
-        const href = this.getAttribute('href');
-
-        // Intercept Cart Clicks
-        if (href && href.includes('/cart')) {
-          e.preventDefault();
-          triggerUniversalAction('cart');
-          triggerHaptic();
-          return;
-        }
-
         if (action) {
           e.preventDefault();
-          switch (action) {
-            case 'search':
-            case 'menu': triggerUniversalAction(action); break;
-            case 'top': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
-            case 'back': window.history.back(); break;
-            case 'share':
-              if (navigator.share) navigator.share({ title: document.title, url: window.location.href });
-              break;
-          }
+          if(action === 'add-to-cart') triggerAddToCart();
+          else if(action === 'history') toggleRecentDrawer();
+          else if(['search','menu','cart'].includes(action)) triggerUniversalAction(action);
+          else if(action === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
+          else if(action === 'back') window.history.back();
+          else if(action === 'share' && navigator.share) navigator.share({ title: document.title, url: window.location.href });
         }
         triggerHaptic();
       });
     });
-
-    // --- 8. Context Awareness: Auto-Hide on Drawer/Modal Open ---
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          const body = document.body;
-          const isLocked = body.classList.contains('overflow-hidden') || 
-                           body.classList.contains('js-drawer-open') ||
-                           body.classList.contains('scroll-locked');
-          
-          if (isLocked) {
-            wrapper.classList.add('nav-suppressed');
-          } else {
-            wrapper.classList.remove('nav-suppressed');
-          }
-        }
-      });
-    });
-    observer.observe(document.body, { attributes: true });
-
   });
-  // End DOMContentLoaded
 </script>
-
 
 {% schema %}
 {
@@ -436,7 +448,115 @@
   "settings": [
     {
       "type": "header",
-      "content": "Source & Content"
+      "content": "CONVERSION BOOSTERS"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_atc",
+      "label": "Enable Sticky Add-to-Cart",
+      "default": true,
+      "info": "On Product Pages, the center icon transforms into a Buy button."
+    },
+    {
+      "type": "text",
+      "id": "sticky_atc_label",
+      "label": "Button Label",
+      "default": "ADD TO CART 🔥"
+    },
+    {
+      "type": "header",
+      "content": "ANNOUNCEMENT TICKER"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_ticker",
+      "label": "Enable Floating Ticker",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "ticker_text",
+      "label": "Ticker Message",
+      "default": "⚡ Free Shipping over $50"
+    },
+    {
+      "type": "url",
+      "id": "ticker_link",
+      "label": "Ticker Link (Optional)"
+    },
+    {
+      "type": "select",
+      "id": "ticker_trigger",
+      "label": "Show Ticker When...",
+      "options": [
+        { "value": "always", "label": "Always" },
+        { "value": "first_visit", "label": "First Visit Only (Once per user)" },
+        { "value": "cart_has_items", "label": "Cart has items" }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "color",
+      "id": "ticker_bg",
+      "label": "Ticker Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "ticker_text_color",
+      "label": "Ticker Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Theme & Colors"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_theme_colors",
+      "label": "Inherit Theme Colors",
+      "default": false,
+      "info": "Automatically match your store's theme."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Custom Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_active",
+      "label": "Custom Active Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "nav_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacity",
+      "default": 90
+    },
+    {
+      "type": "select",
+      "id": "theme_selection",
+      "label": "Design Theme",
+      "options": [
+        { "group": "Originals", "value": "ios", "label": "iOS Glass" },
+        { "group": "Originals", "value": "midnight", "label": "Midnight Capsule" },
+        { "group": "Originals", "value": "action", "label": "Split Action" },
+        { "group": "Conversion", "value": "hot-key", "label": "The Hot-Key (Big Center)" },
+        { "group": "Conversion", "value": "neumorphic", "label": "Neumorphic Glow" },
+        { "group": "Utility", "value": "dark-pro", "label": "Dark Mode Pro" }
+      ],
+      "default": "ios"
+    },
+    {
+      "type": "header",
+      "content": "Menu Content"
     },
     {
       "type": "link_list",
@@ -449,112 +569,51 @@
       "id": "icon_mapping",
       "label": "Icon Names",
       "default": "home-5, search, shopping-bag-3, user, customer-service",
-      "info": "Separate with commas. [Find icon names here](https://remixicon.com/)"
+      "info": "Comma separated. Use 'history' to trigger recent views."
     },
     {
       "type": "text",
       "id": "custom_labels",
-      "label": "Custom Labels (Optional)",
-      "placeholder": "Home, Shop, Cart, Me, Help",
-      "info": "Leave blank to use Menu Titles."
+      "label": "Custom Labels",
+      "info": "Use 'History' or 'Recent' to trigger drawer."
     },
     {
       "type": "text",
       "id": "url_overrides",
-      "label": "Link Overrides (Optional)",
-      "info": "Example: /pages,/about,/collections,/cart",
-      "placeholder": "/link1,/link2,/link3,/link4"
+      "label": "Link Overrides"
     },
     {
       "type": "checkbox",
       "id": "show_labels",
-      "label": "Show Text Labels",
+      "label": "Show Labels",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_cart_count",
-      "label": "Show Cart Count Badge",
+      "label": "Show Cart Badge",
       "default": true
     },
     {
-      "type": "checkbox","id": "enable_auto_dark",
-      "label": "Enable Auto Dark Mode",
-      "default": true,
-      "info": "Automatically flips colors when the user's phone is in Dark Mode."
+      "type": "checkbox",
+      "id": "enable_auto_dark",
+      "label": "Auto Dark Mode",
+      "default": true
     },
-
-
+    {
+      "type": "header",
+      "content": "Sizing & Behavior"
+    },
     {
       "type": "select",
       "id": "visibility_scope",
-      "label": "Display Device Scope",
+      "label": "Device Visibility",
       "options": [
-    { "value": "mobile", "label": "Mobile Only" },
-    { "value": "mobile_tablet", "label": "Mobile & Tablet" },
-    { "value": "all", "label": "All Devices (Including Desktop)" }
-            ],
-      "default": "mobile_tablet"
-    },
-
-    {
-      "type": "header",
-      "content": "Theme Selection"
-    },
-    {
-      "type": "select",
-      "id": "theme_selection",
-      "label": "Design Theme",
-      "options": [
-        { "group": "Originals", "value": "ios", "label": "iOS Glass" },
-        { "group": "Originals", "value": "midnight", "label": "Midnight Capsule" },
-        { "group": "Originals", "value": "action", "label": "Split Action" },
-        { "group": "Originals", "value": "text-only", "label": "Standard Text" },
-        { "group": "Luxury", "value": "monolith", "label": "Monolith (Minimal)" },
-        { "group": "Luxury", "value": "serif-chic", "label": "Serif Chic" },
-        { "group": "Luxury", "value": "ghost", "label": "The Ghost" },
-        { "group": "Luxury", "value": "pearl", "label": "Floating Pearl" },
-        { "group": "Conversion", "value": "hot-key", "label": "The Hot-Key (Big Center)" },
-        { "group": "Conversion", "value": "neumorphic", "label": "Neumorphic Glow" },
-        { "group": "Conversion", "value": "flash-sale", "label": "Flash Sale Gradient" },
-        { "group": "Conversion", "value": "stepper", "label": "The Stepper Bar" },
-        { "group": "Engagement", "value": "bubble-tea", "label": "Bubble Tea Circles" },
-        { "group": "Engagement", "value": "soft-pop", "label": "Soft-Pop Pastel" },
-        { "group": "Engagement", "value": "sticker", "label": "Sticker Die-Cut" },
-        { "group": "Engagement", "value": "socialite", "label": "Socialite (Scrolling)" },
-        { "group": "Utility", "value": "dark-pro", "label": "Dark Mode Pro" },
-        { "group": "Utility", "value": "grid", "label": "The Grid" },
-        { "group": "Utility", "value": "side-fan", "label": "The Side-Fan" },
-        { "group": "Utility", "value": "min-dot", "label": "Minimalist Dot" },
-        { "group": "Utility", "value": "border-top", "label": "Border Top Line" }
+        { "value": "mobile", "label": "Mobile Only" },
+        { "value": "mobile_tablet", "label": "Mobile & Tablet" },
+        { "value": "all", "label": "All Devices" }
       ],
-      "default": "ios"
-    },
-    {
-      "type": "header",
-      "content": "Visual Styling"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Background Color",
-      "default": "#ffffff"
-    },
-    {
-    "type": "range",
-    "id": "nav_opacity",
-    "min": 0,
-    "max": 100,
-    "step": 5,
-    "unit": "%",
-    "label": "Nav Opacity",
-    "default": 90
-    },
-    {
-      "type": "color",
-      "id": "color_active",
-      "label": "Active Color",
-      "default": "#000000"
+      "default": "mobile_tablet"
     },
     {
       "type": "range",
@@ -597,50 +656,53 @@
       "default": 20
     },
     {
-      "type": "header",
-      "content": "Advanced / Theme Support"
+      "type": "range",
+      "id": "desktop_width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Desktop Max Width",
+      "default": 600
     },
     {
-      "type": "header",
-      "content": "Behavior & Interaction"
+      "type": "select",
+      "id": "desktop_scale",
+      "label": "Desktop Scale",
+      "options": [
+        { "value": "1.0", "label": "100%" },
+        { "value": "1.1", "label": "110%" },
+        { "value": "1.2", "label": "120%" },
+        { "value": "1.3", "label": "130%" }
+      ],
+      "default": "1.0"
     },
     {
       "type": "checkbox",
       "id": "enable_spacer",
-      "label": "Push Page Content Up",
-      "info": "Adds padding to the bottom of the page so the nav bar doesn't cover footer content.",
+      "label": "Push Content Up",
       "default": false
     },
     {
       "type": "checkbox",
       "id": "enable_draggable",
-      "label": "Allow User to Drag & Rotate",
-      "info": "Visitors can drag the nav bar. Snapping it to the side rotates it vertically.",
+      "label": "Allow Drag & Rotate",
       "default": false
     },
     {
-  "type": "range",
-  "id": "desktop_width",
-  "min": 400,
-  "max": 1200,
-  "step": 50,
-  "unit": "px",
-  "label": "Desktop Max Width",
-  "default": 600
-},
-{
-  "type": "select",
-  "id": "desktop_scale",
-  "label": "Desktop Scale (Zoom)",
-  "options": [
-    { "value": "1.0", "label": "100% (Normal)" },
-    { "value": "1.1", "label": "110%" },
-    { "value": "1.2", "label": "120%" },
-    { "value": "1.3", "label": "130%" }
-  ],
-  "default": "1.0"
-}
-    
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_search_selector",
+      "label": "Search Selector"
+    },
+    {
+      "type": "text",
+      "id": "custom_menu_selector",
+      "label": "Menu Selector"
+    }
   ]
 }
 {% endschema %}
