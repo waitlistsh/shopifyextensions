@@ -2,41 +2,65 @@
 {{ 'thumb-nav.css' | asset_url | stylesheet_tag }}
 
 {% style %}
+  /* 1. Base Variables & Defaults (Used when Custom Design is OFF) */
   :root {
-    /* 1. Inherit Store Fonts */
     --thumb-font-family: var(--font-body-family, sans-serif);
-
-    /* 2. Color Logic: Custom vs Inherited */
-    {% if block.settings.inherit_theme_colors %}
-      --thumb-bg-color: var(--gradient-background, var(--color-background, {{ block.settings.bg_color }}));
-      --thumb-text-active: var(--color-foreground, var(--color-text, {{ block.settings.color_active }}));
-      --thumb-text-inactive: color-mix(in srgb, var(--thumb-text-active), transparent 50%);
-    {% else %}
-      --thumb-bg-color: {{ block.settings.bg_color }};
-      --thumb-text-active: {{ block.settings.color_active }};
-      --thumb-text-inactive: {{ block.settings.color_active | color_modify: 'alpha', 0.5 }}; 
-    {% endif %}
-
-    /* 3. Ticker Colors */
-    --thumb-ticker-bg: {{ block.settings.ticker_bg }};
-    --thumb-ticker-text: {{ block.settings.ticker_text_color }};
-
-    --thumb-nav_opacity: {{ block.settings.nav_opacity | default: 90 | divided_by: 100.0 }};
+    --thumb-bg-color: #ffffff;
+    --thumb-text-active: #000000;
+    --thumb-text-inactive: rgba(0, 0, 0, 0.5);
+    --thumb-nav_opacity: 0.95;
+    
+    /* Icon & Layout Sizes (Always Active) */
     --thumb-icon-size: {{ block.settings.icon_size }}px;
     --thumb-text-size: {{ block.settings.text_size }}px;
     --thumb-spacing-bottom: {{ block.settings.spacing_bottom }}px;
     --thumb-menu-width: {{ block.settings.menu_width }}%;
     --thumb-desktop-max: {{ block.settings.desktop_width | default: 600 }}px;
     --thumb-scale: {{ block.settings.desktop_scale | default: 1.0 }};
+    
+    /* Ticker Colors (Always Active) */
+    --thumb-ticker-bg: {{ block.settings.ticker_bg }};
+    --thumb-ticker-text: {{ block.settings.ticker_text_color }};
   }
 
-  /* Base Styles */
+  /* 2. Custom Overrides (Only applied when Checkbox is ON) */
+  {% if block.settings.enable_custom_design %}
+    :root {
+      /* Colors */
+      {% if block.settings.inherit_theme_colors %}
+        --thumb-bg-color: var(--gradient-background, var(--color-background, {{ block.settings.bg_color }}));
+        --thumb-text-active: var(--color-foreground, var(--color-text, {{ block.settings.color_active }}));
+        --thumb-text-inactive: color-mix(in srgb, var(--thumb-text-active), transparent 50%);
+      {% else %}
+        --thumb-bg-color: {{ block.settings.bg_color }};
+        --thumb-text-active: {{ block.settings.color_active }};
+        --thumb-text-inactive: {{ block.settings.color_active | color_modify: 'alpha', 0.5 }}; 
+      {% endif %}
+
+      {% if block.settings.color_inactive != blank %}
+        --thumb-text-inactive: {{ block.settings.color_inactive }};
+      {% endif %}
+
+      /* Shape & Opacity */
+      --thumb-radius: {{ block.settings.custom_radius }}px;
+      --thumb-border-width: {{ block.settings.border_width }}px;
+      --thumb-border-color: {{ block.settings.border_color }};
+      --thumb-nav_opacity: {{ block.settings.nav_opacity | default: 90 | divided_by: 100.0 }};
+    }
+
+    /* Force Shape & Border Overrides */
+    .thumb-zone-nav {
+      border-radius: var(--thumb-radius) !important;
+      border: var(--thumb-border-width) solid var(--thumb-border-color) !important;
+    }
+  {% endif %}
+
+  /* 3. Base CSS Rules */
   .thumb-link .label {
     font-family: var(--thumb-font-family) !important;
     font-weight: 600; 
   }
 
-  /* FIX: Ensure Drag Handle stays centered and round */
   .thumb-wrapper.vertical-dock.is-dragging .drag-handle {
     transform: translateX(50%) scale(1.1) !important;
     width: 24px !important;
@@ -44,64 +68,35 @@
     border-radius: 50% !important;
   }
 
-  /* Ticker Styles */
   .thumb-ticker {
     position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--thumb-ticker-bg);
-    color: var(--thumb-ticker-text);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    z-index: -1;
-    opacity: 0;
-    pointer-events: none;
-    text-decoration: none;
+    top: 0; left: 50%; transform: translateX(-50%);
+    background: var(--thumb-ticker-bg); color: var(--thumb-ticker-text);
+    padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: -1; opacity: 0; pointer-events: none; text-decoration: none;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .thumb-ticker.is-visible { opacity: 1; top: -38px; pointer-events: auto; }
   .thumb-wrapper.vertical-dock .thumb-ticker { display: none !important; }
 
-  /* --- STICKY ATC BUTTON (UPDATED) --- */
+  /* Sticky ATC Button */
+  .thumb-link.is-sticky-atc { background: transparent !important; border: none !important; }
   .thumb-link.is-sticky-atc .icon-box {
-    background: var(--thumb-text-active) !important;
-    color: var(--thumb-bg-color) !important;
-    border: 3px solid var(--thumb-bg-color);
-    border-radius: 50%;
-    /* BIGGER SCALE */
-    transform: scale(1.35); 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    display: flex; 
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    /* ATTENTION ANIMATION */
+    background: var(--thumb-text-active) !important; color: var(--thumb-bg-color) !important;
+    border: 3px solid var(--thumb-bg-color); border-radius: 50%;
+    width: 50px !important; height: 50px !important; min-width: 50px !important; min-height: 50px !important;
+    transform: scale(1.2); box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; 
     animation: thumb-pulse 2s infinite;
   }
-  
-  /* Stop pulse when dragging */
   .thumb-wrapper.is-dragging .thumb-link.is-sticky-atc .icon-box { animation: none; }
-
-  .thumb-link.is-sticky-atc i { 
-    font-size: 16px; /* Larger Icon */
-    margin-bottom: 0; 
-  }
-  
+  .thumb-link.is-sticky-atc i { font-size: 14px !important; line-height: 1; margin-bottom: 2px; display: block; }
   .thumb-link.is-sticky-atc .atc-text { 
-    font-size: 8px; 
-    font-weight: 900; 
-    text-transform: uppercase; 
-    line-height: 1;
-    letter-spacing: 0.5px;
+    font-size: 8px; font-weight: 800; text-transform: uppercase; line-height: 0.9; letter-spacing: 0px;
+    white-space: normal; text-align: center; width: 100%; max-width: 44px; word-wrap: break-word; display: block;
   }
-  
-  .thumb-link.is-sticky-atc .label { display: none; }
-
+  .thumb-link.is-sticky-atc .label { display: none !important; }
   @keyframes thumb-pulse {
     0% { transform: scale(1.35); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
     70% { transform: scale(1.4); box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
@@ -110,50 +105,20 @@
 
   /* Recent Views Drawer */
   .thumb-recent-drawer {
-    display: none; 
-    position: fixed;
-    bottom: calc(var(--thumb-spacing-bottom) + 80px);
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    width: 90%;
-    max-width: 400px;
-    background: var(--thumb-bg-color);
-    border-radius: 16px;
-    padding: 15px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    z-index: 2147483646;
-    border: 1px solid rgba(0,0,0,0.05);
-    gap: 10px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    opacity: 0;
+    display: none; position: fixed; bottom: calc(var(--thumb-spacing-bottom) + 80px); left: 50%;
+    transform: translateX(-50%) translateY(20px); width: 90%; max-width: 400px;
+    background: var(--thumb-bg-color); border-radius: 16px; padding: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 2147483646; border: 1px solid rgba(0,0,0,0.05);
+    gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .thumb-recent-drawer.is-open { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
   .recent-item { flex: 0 0 70px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--thumb-text-active); font-size: 10px; text-align: center; }
   .recent-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; margin-bottom: 5px; border: 1px solid rgba(0,0,0,0.1); }
 
-  /* Auto Dark Mode Overrides */
-  {% if block.settings.enable_auto_dark %}
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --thumb-bg-color: #121212; 
-        --thumb-text-active: #ffffff;
-        --thumb-text-inactive: rgba(255, 255, 255, 0.5);
-        --thumb-nav_opacity: 0.95;
-      }
-      .cart-badge, .hot-key-center .icon-box, .thumb-link.is-sticky-atc .icon-box {
-        border-color: #121212 !important;
-      }
-      .theme-ios .thumb-zone-nav {
-        background-color: rgba(30, 30, 30, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .thumb-recent-drawer { border-color: #333; }
-    }
-  {% endif %}
+  .thumb-wrapper.nav-hidden { opacity: 0 !important; pointer-events: none !important; }
 
-  /* Desktop Visibility */
+  /* Desktop */
   @media screen and (min-width: 1025px) {
     .thumb-wrapper { max-width: var(--thumb-desktop-max) !important; transform: translateX(-50%) scale(var(--thumb-scale)); transform-origin: bottom center; }
     {% if block.settings.visibility_scope != 'all' %} .thumb-wrapper { display: none !important; } {% endif %}
@@ -201,7 +166,7 @@
         {%- endif -%}
 
         <a href="{{ final_url }}" 
-           class="thumb-link {% if is_middle %}hot-key-center{% endif %} {% if request.path contains final_url %}active{% endif %} {% if show_sticky_atc %}is-sticky-atc{% endif %}"
+           class="thumb-link {% if is_center_index %}hot-key-center{% endif %} {% if final_url == '/' and request.path == '/' %}active{% elsif final_url != '/' and request.path contains final_url %}active{% endif %} {% if show_sticky_atc %}is-sticky-atc{% endif %}"
            {% if show_sticky_atc %}
              data-thumb-action="add-to-cart"
            {% elsif label_down contains 'history' or label_down contains 'recent' %}
@@ -243,7 +208,7 @@
 
     if (!wrapper) return;
 
-    // 0. HISTORY
+    // 0. HISTORY LOGIC
     {% if request.page_type == 'product' %}
       try {
         const historyKey = 'thumb-recent-views';
@@ -261,7 +226,7 @@
       } catch(e) {}
     {% endif %}
 
-    // 1. TICKER
+    // 1. TICKER LOGIC
     const ticker = document.querySelector('.thumb-ticker');
     if (ticker) {
       let shouldShow = false;
@@ -277,23 +242,40 @@
       if (shouldShow) setTimeout(() => ticker.classList.add('is-visible'), 1500); 
     }
 
-    // 2. ACTIONS
+    // 2. ACTIONS & DRAWER
     const recentDrawer = document.getElementById('thumb-recent-drawer');
+    
     function toggleRecentDrawer() {
       if(recentDrawer.classList.contains('is-open')) {
         recentDrawer.classList.remove('is-open');
+        wrapper.classList.remove('nav-hidden'); // Show nav when internal drawer closes
         setTimeout(() => { recentDrawer.style.display = 'none'; }, 300);
         return;
       }
+      
       const history = JSON.parse(localStorage.getItem('thumb-recent-views') || '[]');
-      if(history.length === 0) recentDrawer.innerHTML = '<div style="padding:10px; opacity:0.6; font-size:12px;">No recently viewed products.</div>';
-      else recentDrawer.innerHTML = history.map(p => `<a href="${p.url}" class="recent-item"><img src="${p.img}" alt="${p.title}" /><span>${p.title.substring(0, 10)}..</span></a>`).join('');
+      
+      if(history.length === 0) {
+        recentDrawer.innerHTML = '<div style="padding:10px; opacity:0.6; font-size:12px;">No recently viewed products.</div>';
+      } else {
+        recentDrawer.innerHTML = history.map(p => 
+          `<a href="${p.url}" class="recent-item">
+             <img src="${p.img}" alt="${p.title}" />
+             <span>${p.title.substring(0, 10)}..</span>
+           </a>`
+        ).join('');
+      }
       
       recentDrawer.style.display = 'flex';
-      setTimeout(() => recentDrawer.classList.add('is-open'), 10);
+      setTimeout(() => {
+        recentDrawer.classList.add('is-open');
+        wrapper.classList.add('nav-hidden'); // Hide nav when internal drawer opens
+      }, 10);
+
       document.addEventListener('click', function close(e) {
         if(!recentDrawer.contains(e.target) && !e.target.closest('[data-thumb-action="history"]')) {
           recentDrawer.classList.remove('is-open');
+          wrapper.classList.remove('nav-hidden'); 
           setTimeout(() => { recentDrawer.style.display = 'none'; }, 300);
           document.removeEventListener('click', close);
         }
@@ -438,6 +420,51 @@
         triggerHaptic();
       });
     });
+
+    // 5. OBSERVER FOR EXTERNAL MENUS (Updated for better compatibility)
+    function initExternalDrawerObserver() {
+      const checkDrawerState = () => {
+        // A. Check Computed Style (most robust): checks if scrolling is locked on body OR html
+        const bodyOverflow = window.getComputedStyle(document.body).overflow;
+        const htmlOverflow = window.getComputedStyle(document.documentElement).overflow;
+        const isScrollLocked = bodyOverflow === 'hidden' || htmlOverflow === 'hidden';
+
+        // B. Check for known Class Names (Dawn, Prestige, etc.)
+        const hasLockClass = document.body.classList.contains('overflow-hidden') || 
+                             document.documentElement.classList.contains('overflow-hidden') ||
+                             document.body.classList.contains('js-drawer-open');
+
+        // C. Check for standard 'details' menu element being open
+        const isDetailsOpen = document.querySelector('details.menu-drawer-container[open], details[open] > .menu-drawer');
+
+        // D. Check internal drawer
+        const isInternalOpen = recentDrawer.classList.contains('is-open');
+
+        if (isScrollLocked || hasLockClass || isDetailsOpen || isInternalOpen) {
+          wrapper.classList.add('nav-hidden');
+        } else {
+          wrapper.classList.remove('nav-hidden');
+        }
+      };
+
+      // 1. Observer: Watch Body & HTML for class/style changes
+      const observer = new MutationObserver(checkDrawerState);
+      observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+
+      // 2. Observer: Watch all <details> elements for the 'open' attribute
+      document.querySelectorAll('details').forEach(el => {
+         new MutationObserver(checkDrawerState).observe(el, { attributes: true, attributeFilter: ['open'] });
+      });
+
+      // 3. Fallback: Check every 500ms (Catches edge cases where observers miss)
+      setInterval(checkDrawerState, 500);
+      
+      // Initial run
+      checkDrawerState();
+    }
+    initExternalDrawerObserver();
+
   });
 </script>
 
@@ -461,7 +488,7 @@
       "type": "text",
       "id": "sticky_atc_label",
       "label": "Button Label",
-      "default": "ADD TO CART 🔥"
+      "default": "ADD TO CART "
     },
     {
       "type": "header",
@@ -507,7 +534,7 @@
       "label": "Ticker Text",
       "default": "#ffffff"
     },
-    {
+   {
       "type": "header",
       "content": "Theme & Colors"
     },
@@ -519,6 +546,13 @@
       "info": "Automatically match your store's theme."
     },
     {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Colors & Shape",
+      "default": false,
+      "info": "Uncheck this to RESET to the selected Theme's default look."
+    },
+    {
       "type": "color",
       "id": "bg_color",
       "label": "Custom Background",
@@ -527,8 +561,14 @@
     {
       "type": "color",
       "id": "color_active",
-      "label": "Custom Active Color",
+      "label": "Active Icon Color",
       "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "color_inactive",
+      "label": "Inactive Icon Color",
+      "info": "Optional. Overrides the auto-faded color."
     },
     {
       "type": "range",
@@ -541,16 +581,155 @@
       "default": 90
     },
     {
+      "type": "range",
+      "id": "custom_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner Radius",
+      "default": 24,
+      "info": "0 = Square, 50 = Round/Pill."
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Width",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "transparent"
+    },
+    
+
+    {
       "type": "select",
       "id": "theme_selection",
       "label": "Design Theme",
       "options": [
-        { "group": "Originals", "value": "ios", "label": "iOS Glass" },
-        { "group": "Originals", "value": "midnight", "label": "Midnight Capsule" },
-        { "group": "Originals", "value": "action", "label": "Split Action" },
-        { "group": "Conversion", "value": "hot-key", "label": "The Hot-Key (Big Center)" },
-        { "group": "Conversion", "value": "neumorphic", "label": "Neumorphic Glow" },
-        { "group": "Utility", "value": "dark-pro", "label": "Dark Mode Pro" }
+        { "group": "1. Standard", "value": "ios", "label": "iOS Glass" },
+        { "group": "1. Standard", "value": "midnight", "label": "Midnight Capsule" },
+        { "group": "1. Standard", "value": "action", "label": "Split Action" },
+        { "group": "1. Standard", "value": "text-only", "label": "Text Only" },
+        { "group": "1. Standard", "value": "material", "label": "Material Design" },
+        { "group": "1. Standard", "value": "flat", "label": "Flat & Clean" },
+        
+        { "group": "2. Modern UI", "value": "island", "label": "Dynamic Island" },
+        { "group": "2. Modern UI", "value": "float", "label": "Levitate (Floating)" },
+        { "group": "2. Modern UI", "value": "neumorphic", "label": "Neumorphic Light" },
+        { "group": "2. Modern UI", "value": "neumorphic-dark", "label": "Neumorphic Dark" },
+        { "group": "2. Modern UI", "value": "glass-morphism", "label": "Full Glassmorphism" },
+        { "group": "2. Modern UI", "value": "brutal", "label": "Brutalist Bold" },
+        { "group": "2. Modern UI", "value": "bauhaus", "label": "Bauhaus Geometric" },
+        { "group": "2. Modern UI", "value": "outline", "label": "Wireframe Outline" },
+        { "group": "2. Modern UI", "value": "pill", "label": "The Pill" },
+        { "group": "2. Modern UI", "value": "notch", "label": "Phone Notch" },
+
+        { "group": "3. Gradients", "value": "flash-sale", "label": "Flash Sale (Red/Orange)" },
+        { "group": "3. Gradients", "value": "solar", "label": "Solar Flare (Pink/Orange)" },
+        { "group": "3. Gradients", "value": "ocean", "label": "Deep Ocean (Blue/Teal)" },
+        { "group": "3. Gradients", "value": "berry", "label": "Berry Smoothie (Purple/Pink)" },
+        { "group": "3. Gradients", "value": "aurora", "label": "Aurora Borealis (Green/Blue)" },
+        { "group": "3. Gradients", "value": "sunset", "label": "Sunset Blvd (Yellow/Red)" },
+        { "group": "3. Gradients", "value": "minty", "label": "Fresh Mint (Green/Cyan)" },
+        { "group": "3. Gradients", "value": "royal", "label": "Royal Gold (Gold/Black)" },
+        { "group": "3. Gradients", "value": "disco", "label": "Disco Fever (Multi)" },
+        { "group": "3. Gradients", "value": "chrome", "label": "Liquid Chrome" },
+
+        { "group": "4. Dark & Moody", "value": "dark-pro", "label": "Dark Mode Pro" },
+        { "group": "4. Dark & Moody", "value": "gothic", "label": "Gothic Dark" },
+        { "group": "4. Dark & Moody", "value": "abyss", "label": "The Abyss (Vantablack)" },
+        { "group": "4. Dark & Moody", "value": "vampire", "label": "Vampire (Black/Red)" },
+        { "group": "4. Dark & Moody", "value": "obsidian", "label": "Obsidian Gloss" },
+        { "group": "4. Dark & Moody", "value": "stealth", "label": "Stealth Matte" },
+        { "group": "4. Dark & Moody", "value": "carbon", "label": "Carbon Fiber" },
+        { "group": "4. Dark & Moody", "value": "night-sky", "label": "Starry Night" },
+
+        { "group": "5. Retro & Nostalgia", "value": "pixel", "label": "Retro Pixel (8-Bit)" },
+        { "group": "5. Retro & Nostalgia", "value": "vapor", "label": "Vaporwave" },
+        { "group": "5. Retro & Nostalgia", "value": "terminal", "label": "Hacker Terminal" },
+        { "group": "5. Retro & Nostalgia", "value": "gameboy", "label": "Handheld Console" },
+        { "group": "5. Retro & Nostalgia", "value": "vhs", "label": "VHS Glitch" },
+        { "group": "5. Retro & Nostalgia", "value": "pop-art", "label": "Pop Art" },
+        { "group": "5. Retro & Nostalgia", "value": "groove", "label": "70s Groove" },
+        { "group": "5. Retro & Nostalgia", "value": "diner", "label": "50s Diner" },
+        { "group": "5. Retro & Nostalgia", "value": "blueprint", "label": "Blueprint" },
+        
+        { "group": "6. Futuristic", "value": "cyber", "label": "Cyberpunk Neon" },
+        { "group": "6. Futuristic", "value": "space", "label": "Deep Space" },
+        { "group": "6. Futuristic", "value": "matrix", "label": "The Matrix" },
+        { "group": "6. Futuristic", "value": "holo", "label": "Holographic" },
+        { "group": "6. Futuristic", "value": "scifi", "label": "Sci-Fi HUD" },
+        { "group": "6. Futuristic", "value": "robot", "label": "White Robot" },
+        { "group": "6. Futuristic", "value": "laser", "label": "Laser Grid" },
+
+        { "group": "7. Textures & Materials", "value": "clay", "label": "Claymorphism" },
+        { "group": "7. Textures & Materials", "value": "paper", "label": "Vintage Paper" },
+        { "group": "7. Textures & Materials", "value": "wood", "label": "Wood Grain" },
+        { "group": "7. Textures & Materials", "value": "denim", "label": "Blue Denim" },
+        { "group": "7. Textures & Materials", "value": "leather", "label": "Brown Leather" },
+        { "group": "7. Textures & Materials", "value": "marble", "label": "White Marble" },
+        { "group": "7. Textures & Materials", "value": "gold-bar", "label": "Solid Gold" },
+        { "group": "7. Textures & Materials", "value": "concrete", "label": "Urban Concrete" },
+        { "group": "7. Textures & Materials", "value": "ice", "label": "Frosted Ice" },
+        { "group": "7. Textures & Materials", "value": "water", "label": "Water Droplet" },
+
+        { "group": "8. Creative Arts", "value": "sketch", "label": "Hand Drawn Sketch" },
+        { "group": "8. Creative Arts", "value": "sticker", "label": "Sticker Bomb" },
+        { "group": "8. Creative Arts", "value": "paint", "label": "Paint Splatter" },
+        { "group": "8. Creative Arts", "value": "watercolor", "label": "Watercolor" },
+        { "group": "8. Creative Arts", "value": "origami", "label": "Origami Fold" },
+        { "group": "8. Creative Arts", "value": "collage", "label": "Magazine Collage" },
+        { "group": "8. Creative Arts", "value": "marker", "label": "Permanent Marker" },
+
+        { "group": "9. Fun & Playful", "value": "candy", "label": "Candy Shop" },
+        { "group": "9. Fun & Playful", "value": "bubble-tea", "label": "Bubble Tea" },
+        { "group": "9. Fun & Playful", "value": "lego", "label": "Building Blocks" },
+        { "group": "9. Fun & Playful", "value": "donut", "label": "Sprinkled Donut" },
+        { "group": "9. Fun & Playful", "value": "slime", "label": "Green Slime" },
+        { "group": "9. Fun & Playful", "value": "emoji", "label": "Emoji Yellow" },
+        { "group": "9. Fun & Playful", "value": "cloud", "label": "Fluffy Cloud" },
+        { "group": "9. Fun & Playful", "value": "unicorn", "label": "Unicorn Magic" },
+
+        { "group": "10. Minimalist", "value": "monolith", "label": "Monolith" },
+        { "group": "10. Minimalist", "value": "min-dot", "label": "Minimalist Dot" },
+        { "group": "10. Minimalist", "value": "ghost", "label": "Ghost (Transparent)" },
+        { "group": "10. Minimalist", "value": "line", "label": "Thin Line" },
+        { "group": "10. Minimalist", "value": "underline", "label": "Underline Only" },
+        { "group": "10. Minimalist", "value": "overline", "label": "Overline Only" },
+        { "group": "10. Minimalist", "value": "dots", "label": "Dots Only" },
+        { "group": "10. Minimalist", "value": "boxed", "label": "Wireframe Box" },
+        { "group": "10. Minimalist", "value": "pearl", "label": "Floating Pearl" },
+        { "group": "10. Minimalist", "value": "soft-pop", "label": "Soft Pop" },
+
+        { "group": "11. Atmosphere", "value": "nature", "label": "Organic Nature" },
+        { "group": "11. Atmosphere", "value": "luxury", "label": "Gold Luxury" },
+        { "group": "11. Atmosphere", "value": "eco", "label": "Eco Friendly" },
+        { "group": "11. Atmosphere", "value": "desert", "label": "Desert Sand" },
+        { "group": "11. Atmosphere", "value": "forest", "label": "Dark Forest" },
+        { "group": "11. Atmosphere", "value": "fire", "label": "Fire & Ash" },
+
+        { "group": "12. Seasonal", "value": "xmas", "label": "Christmas Red" },
+        { "group": "12. Seasonal", "value": "halloween", "label": "Halloween Spooky" },
+        { "group": "12. Seasonal", "value": "valentine", "label": "Valentine Hearts" },
+        { "group": "12. Seasonal", "value": "spring", "label": "Spring Bloom" },
+        { "group": "12. Seasonal", "value": "summer", "label": "Summer Vibes" },
+        { "group": "12. Seasonal", "value": "autumn", "label": "Autumn Leaves" },
+        { "group": "12. Seasonal", "value": "winter", "label": "Winter Snow" },
+
+        { "group": "13. Utility / Legacy", "value": "hot-key", "label": "Hot-Key Center" },
+        { "group": "13. Utility / Legacy", "value": "stepper", "label": "The Stepper" },
+        { "group": "13. Utility / Legacy", "value": "side-fan", "label": "Side Fan" },
+        { "group": "13. Utility / Legacy", "value": "border-top", "label": "Simple Border Top" },
+        { "group": "13. Utility / Legacy", "value": "grid", "label": "Grid Layout" },
+        { "group": "13. Utility / Legacy", "value": "socialite", "label": "Socialite" }
       ],
       "default": "ios"
     },

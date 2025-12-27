@@ -1,5 +1,3 @@
-
-
 /* =========================================
    BASE STYLES 
    ========================================= */
@@ -75,19 +73,13 @@
 }
 
 /* =========================================
-   THEME 1: iOS GLASS (UPDATED)
+   ORIGINAL THEMES (1-4)
    ========================================= */
+
+/* THEME 1: iOS GLASS */
 .theme-ios .thumb-zone-nav {
   padding: 10px 0;
-  /* REMOVED: opacity: var(--thumb-nav_opacity); */
-  
-  /* Corrected variable name and applied mix specifically for Glass effect */
-  background-color: color-mix(
-    in srgb, 
-    var(--thumb-bg-color), 
-    transparent calc(100% - (var(--thumb-nav_opacity) * 100%))
-  ) !important;
-  
+  background-color: color-mix(in srgb, var(--thumb-bg-color), transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
@@ -95,11 +87,8 @@
   box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
 }
 
-/* =========================================
-   THEME 2: MIDNIGHT CAPSULE 
-   ========================================= */
+/* THEME 2: MIDNIGHT CAPSULE */
 .theme-midnight .thumb-zone-nav {
-  /* No background definition needed here; it inherits the Base Rule */
   border-radius: 100px;
   padding: 14px 20px;
   box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
@@ -107,46 +96,30 @@
 }
 .theme-midnight .label { display: none; }
 .theme-midnight .thumb-link.active .icon-box::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  width: 4px;
-  height: 4px;
-  background: var(--thumb-text-active);
-  border-radius: 50%;
-  left: 50%;
-  transform: translateX(-50%);
+  content: ''; position: absolute; bottom: -10px; width: 4px; height: 4px;
+  background: var(--thumb-text-active); border-radius: 50%;
+  left: 50%; transform: translateX(-50%);
 }
 
-/* =========================================
-   THEME 3: SPLIT ACTION 
-   ========================================= */
+/* THEME 3: SPLIT ACTION */
 .theme-action { bottom: 0 !important; width: 100% !important; left: 0; transform: none; }
 .theme-action .thumb-zone-nav {
-  /* Inherits Base Rule color */
   border-top: 1px solid #eee;
   padding: 10px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0; 
   align-items: flex-end;
 }
 .theme-action .thumb-link.cart-link .icon-box {
-  background: #000;
-  color: #fff;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-bottom: 25px;
+  background: #000; color: #fff; width: 50px; height: 50px;
+  border-radius: 50%; margin-bottom: 25px;
   border: 4px solid var(--thumb-bg-color);
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* =========================================
-   THEME 4: TEXT ONLY 
-   ========================================= */
+/* THEME 4: TEXT ONLY */
 .theme-text-only { bottom: 0 !important; width: 100% !important; left: 0; transform: none; }
 .theme-text-only .thumb-zone-nav {
   justify-content: space-evenly;
   padding: 18px 0 calc(30px + env(safe-area-inset-bottom, 0px)) 0;
-  /* Inherits Base Rule color */
   border-top: 1px solid rgba(0,0,0,0.08);
   align-items: center;
 }
@@ -154,135 +127,158 @@
 .theme-text-only .icon-box { height: 0; margin: 0; }
 .theme-text-only .thumb-link.active { text-decoration: underline; text-underline-offset: 4px; opacity: 1; }
 
+
 /* =========================================
-   STYLED THEMES (UPDATED FOR TRANSPARENCY)
+   THEME MEGA-PACK (100 THEMES)
    ========================================= */
 
-/* 1. Monolith (Hardcoded Black -> Transparent Black) */
-.theme-monolith .thumb-zone-nav { 
-  /* Override Base Rule with Black Mix */
-  background-color: color-mix(in srgb, #000000, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  border-radius: 0; padding: 15px 0; 
-}
-.theme-monolith .thumb-link { color: #666; font-family: sans-serif; text-transform: uppercase; }
-.theme-monolith .thumb-link.active { color: #fff; }
+/* --- 1. STANDARD --- */
+.theme-material .thumb-zone-nav { background: #fff !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08); border-radius: 4px; }
+.theme-material .thumb-link.active { color: #6200ee; }
+.theme-flat .thumb-zone-nav { background: #ecf0f1 !important; border-radius: 0; }
+.theme-flat .thumb-link.active { color: #2c3e50; font-weight: 800; }
 
-/* 2. Serif-Chic */
-.theme-serif-chic .thumb-zone-nav { 
-  /* Inherits Base Rule */
-  border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; 
-}
-.theme-serif-chic .label { font-family: serif; font-style: italic; color: #d4af37; }
+/* --- 2. MODERN UI --- */
+.theme-island .thumb-zone-nav { background: #000 !important; border-radius: 100px; padding: 12px 25px; justify-content: space-between; }
+.theme-island .thumb-link { color: #555; } .theme-island .thumb-link.active { color: #fff; } .theme-island .label { display: none; }
+.theme-float .thumb-zone-nav { background: var(--thumb-bg-color) !important; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); transform: translateY(-5px); width: 85% !important; }
+.theme-neumorphic-dark .thumb-zone-nav { background: #222 !important; box-shadow: 5px 5px 10px #1a1a1a, -5px -5px 10px #2a2a2a; border-radius: 20px; }
+.theme-neumorphic-dark .thumb-link.active { color: #00e5ff; text-shadow: 0 0 5px #00e5ff; }
+.theme-glass-morphism .thumb-zone-nav { background: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); border-radius: 20px; }
+.theme-brutal .thumb-zone-nav { background: #fff !important; border: 5px solid #000; border-radius: 0; box-shadow: 8px 8px 0 #000; }
+.theme-brutal .thumb-link.active { background: #000; color: #fff !important; }
+.theme-bauhaus .thumb-zone-nav { background: #f4f4f4 !important; border-radius: 0; gap: 0; padding: 0; border: 2px solid #000; }
+.theme-bauhaus .thumb-link { border-right: 2px solid #000; justify-content: center; } .theme-bauhaus .thumb-link:last-child { border-right: none; }
+.theme-bauhaus .thumb-link:nth-child(1).active { background: #e94e33; color: #fff; }
+.theme-bauhaus .thumb-link:nth-child(2).active { background: #f5b91b; color: #000; }
+.theme-bauhaus .thumb-link:nth-child(3).active { background: #2b77b7; color: #fff; }
+.theme-outline .thumb-zone-nav { background: transparent !important; backdrop-filter: blur(10px); border: 1px solid var(--thumb-text-active); border-radius: 50px; }
+.theme-outline .thumb-link.active { text-decoration: underline; }
+.theme-pill .thumb-zone-nav { border-radius: 100px; background: #eee !important; padding: 5px; } .theme-pill .thumb-link.active { background: #fff; border-radius: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.theme-notch .thumb-zone-nav { border-radius: 0 0 20px 20px; background: #000 !important; margin-top: -10px; } .theme-notch .thumb-link { color: #fff; }
 
-/* 3. The Ghost (Always Transparent) */
-.theme-ghost .thumb-zone-nav { background: transparent !important; backdrop-filter: none; box-shadow: none; }
-.theme-ghost .icon-box { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); color: #fff; }
+/* --- 3. GRADIENTS --- */
+.theme-flash-sale .thumb-zone-nav { background: linear-gradient(90deg, #ff416c, #ff4b2b) !important; } .theme-flash-sale .thumb-link.active { color: #fff; animation: pulse 1.5s infinite; }
+.theme-solar .thumb-zone-nav { background: linear-gradient(to right, #ff512f, #dd2476) !important; border-radius: 50px; } .theme-solar .thumb-link { color: rgba(255,255,255,0.7) !important; } .theme-solar .thumb-link.active { color: #fff !important; }
+.theme-ocean .thumb-zone-nav { background: linear-gradient(to right, #2b5876, #4e4376) !important; } .theme-ocean .thumb-link { color: #fff !important; }
+.theme-berry .thumb-zone-nav { background: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045) !important; } .theme-berry .thumb-link { color: #fff !important; }
+.theme-aurora .thumb-zone-nav { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%) !important; } .theme-aurora .thumb-link.active { color: #004d40 !important; }
+.theme-sunset .thumb-zone-nav { background: linear-gradient(to right, #f83600 0%, #f9d423 100%) !important; } .theme-sunset .thumb-link.active { color: #fff !important; }
+.theme-minty .thumb-zone-nav { background: linear-gradient(to top, #96fbc4 0%, #f9f586 100%) !important; } .theme-minty .thumb-link { color: #333 !important; }
+.theme-royal .thumb-zone-nav { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; } .theme-royal .thumb-link { color: #000 !important; font-weight: bold; }
+.theme-disco .thumb-zone-nav { background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff) !important; background-size: 400% 400%; animation: thumb-gradient 3s ease infinite; }
+.theme-chrome .thumb-zone-nav { background: linear-gradient(135deg, #e0e0e0, #ffffff, #e0e0e0) !important; border: 1px solid #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+@keyframes thumb-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-/* 4. Floating Pearl (Hardcoded White -> Transparent White) */
-.theme-pearl .thumb-zone-nav { 
-  /* Override Base Rule with White Mix */
-  background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  border-radius: 50px; border: 0.5px solid #eee; padding: 5px 15px; 
-}
-.theme-pearl .thumb-link.active { transform: translateY(-3px); }
+/* --- 4. DARK & MOODY --- */
+.theme-gothic .thumb-zone-nav { background: #111 !important; border: 1px solid #333; border-radius: 5px; } .theme-gothic .thumb-link { font-family: serif; letter-spacing: 1px; text-transform: uppercase; font-size: 9px; } .theme-gothic .thumb-link.active i { color: #ff0000; }
+.theme-abyss .thumb-zone-nav { background: #000 !important; border: none; box-shadow: none; } .theme-abyss .thumb-link { color: #333 !important; } .theme-abyss .thumb-link.active { color: #555 !important; }
+.theme-vampire .thumb-zone-nav { background: #2b0a0a !important; border-top: 2px solid #8a0000; } .theme-vampire .thumb-link.active { color: #ff0000 !important; }
+.theme-obsidian .thumb-zone-nav { background: #1c1c1c !important; box-shadow: inset 0 0 20px #000; border-radius: 30px; } .theme-obsidian .thumb-link.active { color: #aaa !important; }
+.theme-stealth .thumb-zone-nav { background: #222 !important; opacity: 0.8; border-radius: 0; } .theme-stealth .thumb-link { color: #444 !important; } .theme-stealth .thumb-link.active { color: #0f0 !important; }
+.theme-carbon .thumb-zone-nav { background: radial-gradient(black 15%, transparent 16%) 0 0, radial-gradient(black 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px; background-color:#282828; background-size:16px 16px !important; } .theme-carbon .thumb-link.active { color: #fff !important; }
+.theme-night-sky .thumb-zone-nav { background: #0b1026 !important; } .theme-night-sky .thumb-link.active { color: #fffbc9; text-shadow: 0 0 5px #fffbc9; }
 
-/* 5. The Hot-Key */
-.theme-hot-key .thumb-link:nth-child(3) .icon-box { 
-  background: var(--thumb-text-active); color: #fff !important; 
-  width: 55px; height: 55px; border-radius: 50%; margin-top: -35px; 
-  border: 5px solid var(--thumb-bg-color); box-shadow: 0 8px 15px rgba(0,0,0,0.2); 
-}
+/* --- 5. RETRO & NOSTALGIA --- */
+.theme-pixel .thumb-zone-nav { background: #fff !important; border: 4px solid #000; border-radius: 0; box-shadow: 4px 4px 0px #000; } .theme-pixel .thumb-link { font-family: 'Courier New', monospace; }
+.theme-vapor .thumb-zone-nav { background: linear-gradient(90deg, #ff71ce, #01cdfe) !important; border-radius: 0; border-top: 2px solid #fff; } .theme-vapor .thumb-link { color: #fff !important; text-shadow: 2px 2px #000; }
+.theme-terminal .thumb-zone-nav { background: #000 !important; border-top: 2px solid #0f0; font-family: monospace; } .theme-terminal .thumb-link { color: #0f0 !important; opacity: 0.6 !important; } .theme-terminal .thumb-link.active { opacity: 1 !important; text-shadow: 0 0 8px #0f0; } .theme-terminal .thumb-link.active::before { content: ">"; margin-right: 2px; }
+.theme-gameboy .thumb-zone-nav { background: #c0c0c0 !important; border-radius: 10px 10px 40px 10px; border: 2px solid #8b8b8b; } .theme-gameboy .thumb-link.active { color: #8b008b; }
+.theme-vhs .thumb-zone-nav { background: #111 !important; border-bottom: 3px solid #ff0055; } .theme-vhs .thumb-link.active { color: #00ffff; text-shadow: 2px 0 #ff0055; }
+.theme-pop-art .thumb-zone-nav { background: #ffeb3b !important; border: 3px solid #000; box-shadow: 5px 5px 0 #000; } .theme-pop-art .thumb-link { color: #000 !important; } .theme-pop-art .thumb-link.active { background: #f44336; color: #fff !important; border-radius: 50%; }
+.theme-groove .thumb-zone-nav { background: #6a0572 !important; border-radius: 20px; } .theme-groove .thumb-link { color: #ffa07a !important; font-family: 'Comic Sans MS', cursive; }
+.theme-diner .thumb-zone-nav { background: #b2dfdb !important; border: 2px solid #ff5252; } .theme-diner .thumb-link.active { color: #ff5252 !important; }
+.theme-blueprint .thumb-zone-nav { background: #00509d !important; border: 1px dashed #fff; } .theme-blueprint .thumb-link { color: #fff !important; }
 
-/* 6. Neumorphic Glow (Hardcoded Grey -> Transparent Grey) */
-.theme-neumorphic .thumb-zone-nav { 
-  background-color: color-mix(in srgb, #e0e0e0, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff; border-radius: 20px; 
-}
-.theme-neumorphic .thumb-link.active .icon-box { color: var(--thumb-text-active); text-shadow: 0 0 8px var(--thumb-text-active); }
+/* --- 6. FUTURISTIC --- */
+.theme-cyber .thumb-zone-nav { background: #050505 !important; border: 2px solid #00f3ff; box-shadow: 0 0 15px rgba(0, 243, 255, 0.5); clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); border-radius: 0; } .theme-cyber .thumb-link.active { color: #fcee0a; text-shadow: 0 0 5px #fcee0a; }
+.theme-space .thumb-zone-nav { background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 100%) !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; } .theme-space .thumb-link.active { color: #00fff5; text-shadow: 0 0 10px rgba(0, 255, 245, 0.6); }
+.theme-matrix .thumb-zone-nav { background: #000 !important; border: 1px solid #003300; box-shadow: inset 0 0 20px #001100; } .theme-matrix .thumb-link { color: #003300 !important; } .theme-matrix .thumb-link.active { color: #00ff00 !important; text-shadow: 0 0 5px #00ff00; }
+.theme-holo .thumb-zone-nav { background: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 0 10px rgba(255,255,255,0.3); } .theme-holo .thumb-link.active { color: #ff00ff; mix-blend-mode: screen; }
+.theme-scifi .thumb-zone-nav { background: #001133 !important; border-top: 2px solid #00ccff; border-bottom: 2px solid #00ccff; border-radius: 5px; } .theme-scifi .thumb-link { color: #005577 !important; } .theme-scifi .thumb-link.active { color: #00ccff !important; }
+.theme-robot .thumb-zone-nav { background: #fff !important; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); } .theme-robot .thumb-link.active .icon-box { background: #000; color: #fff; border-radius: 5px; }
+.theme-laser .thumb-zone-nav { background: #000 !important; } .theme-laser .thumb-link.active { border-bottom: 2px solid #f00; box-shadow: 0 5px 5px -5px #f00; }
 
-/* 7. Flash Sale (Gradient - Opacity slider won't work well here without complex masking, kept as solid) */
-.theme-flash-sale .thumb-zone-nav { background: linear-gradient(90deg, #ff416c, #ff4b2b) !important; }
-.theme-flash-sale .thumb-link { color: rgba(255,255,255,0.7); }
-.theme-flash-sale .thumb-link.active { color: #fff; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+/* --- 7. TEXTURES --- */
+.theme-clay .thumb-zone-nav { background: #f0f0f3 !important; border-radius: 30px; box-shadow: inset 5px 5px 10px rgba(163,177,198, 0.3), inset -5px -5px 10px rgba(255,255,255, 0.8), 10px 10px 20px rgba(163,177,198, 0.2); border: none; } .theme-clay .thumb-link.active .icon-box { background: #f0f0f3; border-radius: 50%; box-shadow: 5px 5px 10px rgba(163,177,198, 0.4), -5px -5px 10px rgba(255,255,255, 0.8); padding: 5px; }
+.theme-paper .thumb-zone-nav { background: #fdfbf7 !important; border: 1px solid #dcdcdc; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); } .theme-paper .thumb-link { color: #5c5c5c; font-family: 'Times New Roman', serif; font-style: italic; } .theme-paper .thumb-link.active { color: #000; text-decoration: underline; }
+.theme-wood .thumb-zone-nav { background: #8d6e63 !important; border: 2px solid #5d4037; } .theme-wood .thumb-link { color: #d7ccc8 !important; } .theme-wood .thumb-link.active { color: #fff !important; }
+.theme-denim .thumb-zone-nav { background: #1565c0 !important; border: 2px dashed #fff; } .theme-denim .thumb-link { color: #bbdefb !important; }
+.theme-leather .thumb-zone-nav { background: #5d4037 !important; box-shadow: inset 0 0 10px #3e2723; } .theme-leather .thumb-link { color: #d7ccc8 !important; }
+.theme-marble .thumb-zone-nav { background: #f5f5f5 !important; border: 1px solid #e0e0e0; } .theme-marble .thumb-link.active { color: #000 !important; }
+.theme-gold-bar .thumb-zone-nav { background: linear-gradient(135deg, #ffd700, #ffec8b, #ffd700) !important; border: 1px solid #daa520; } .theme-gold-bar .thumb-link { color: #5c4002 !important; }
+.theme-concrete .thumb-zone-nav { background: #9e9e9e !important; border-radius: 0; } .theme-concrete .thumb-link.active { color: #fff; background: #616161; padding: 5px; }
+.theme-ice .thumb-zone-nav { background: rgba(255, 255, 255, 0.2) !important; backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px; } .theme-ice .thumb-link.active { color: #007aff; background: rgba(255,255,255,0.3); border-radius: 12px; }
+.theme-water .thumb-zone-nav { background: rgba(0, 150, 255, 0.2) !important; backdrop-filter: blur(5px); border-radius: 30px; box-shadow: inset 0 0 20px rgba(0, 150, 255, 0.3); }
 
-/* 8. The Stepper */
-.theme-stepper::before { content: ""; position: absolute; top: 0; left: 0; width: 60%; height: 3px; background: var(--thumb-text-active); z-index: 2; }
-.theme-stepper .thumb-zone-nav { padding-top: 15px; }
+/* --- 8. CREATIVE ARTS --- */
+.theme-sketch .thumb-zone-nav { background: #fff !important; border: 2px solid #333; border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; box-shadow: 2px 3px 10px rgba(0,0,0,0.1); } .theme-sketch .thumb-link.active { text-decoration: underline; text-decoration-style: wavy; }
+.theme-sticker .icon-box { background: #fff; border: 2px solid #000; border-radius: 8px; transform: rotate(-3deg); } .theme-sticker .thumb-link:nth-child(even) .icon-box { transform: rotate(3deg); }
+.theme-paint .thumb-zone-nav { background: #fff !important; border-radius: 20px; } .theme-paint .thumb-link.active .icon-box { background: #ff4081; color: #fff; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+.theme-watercolor .thumb-zone-nav { background: #fff !important; opacity: 0.9; } .theme-watercolor .thumb-link.active { color: #6200ea; text-shadow: 2px 2px 4px rgba(98, 0, 234, 0.3); }
+.theme-origami .thumb-zone-nav { background: #fff !important; clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%); }
+.theme-collage .thumb-zone-nav { background: #fff0f5 !important; border: 2px solid #000; } .theme-collage .thumb-link { transform: rotate(var(--r, 0deg)); } .theme-collage .thumb-link:nth-child(1) { --r: -2deg; } .theme-collage .thumb-link:nth-child(2) { --r: 2deg; }
+.theme-marker .thumb-zone-nav { background: #fff !important; border: 3px solid #000; border-radius: 5px; } .theme-marker .thumb-link.active { color: #f00; font-family: 'Comic Sans MS', cursive; }
 
-/* 9. Bubble Tea */
-.theme-bubble-tea .thumb-zone-nav { background: transparent !important; gap: 8px; justify-content: center; }
-.theme-bubble-tea .thumb-link { background: #fff; border-radius: 50%; max-width: 60px; height: 60px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+/* --- 9. FUN & PLAYFUL --- */
+.theme-candy .thumb-zone-nav { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%) !important; border-radius: 50px; border: 4px solid #fff; } .theme-candy .thumb-link { color: #d93d75 !important; font-weight: bold; } .theme-candy .thumb-link.active { color: #fff !important; background: #d93d75; border-radius: 20px; padding: 0 10px; }
+.theme-bubble-tea .thumb-zone-nav { background: transparent !important; gap: 8px; justify-content: center; } .theme-bubble-tea .thumb-link { background: #fff; border-radius: 50%; max-width: 60px; height: 60px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+.theme-lego .thumb-zone-nav { background: #f44336 !important; border-top: 4px solid #d32f2f; } .theme-lego .thumb-link { color: #fff !important; font-weight: bold; }
+.theme-donut .thumb-zone-nav { background: #fce4ec !important; border-radius: 50px; border: 2px solid #f8bbd0; } .theme-donut .thumb-link.active { color: #e91e63; }
+.theme-slime .thumb-zone-nav { background: #ccff90 !important; border-radius: 20px; border-bottom: 5px solid #76ff03; } .theme-slime .thumb-link.active { color: #33691e; }
+.theme-emoji .thumb-zone-nav { background: #fff176 !important; border-radius: 30px; } .theme-emoji .thumb-link.active { transform: scale(1.2); }
+.theme-cloud .thumb-zone-nav { background: #fff !important; border-radius: 50px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); } .theme-cloud .thumb-link.active { color: #29b6f6; }
+.theme-unicorn .thumb-zone-nav { background: linear-gradient(to right, #ff9a9e, #fad0c4, #fad0c4) !important; } .theme-unicorn .thumb-link.active { color: #fff; text-shadow: 1px 1px 2px #ff69b4; }
 
-/* 10. Soft-Pop (Pastel Blue -> Transparent Pastel) */
-.theme-soft-pop .thumb-zone-nav { 
-  background-color: color-mix(in srgb, #f0f4f8, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  border-radius: 30px; 
-}
-.theme-soft-pop .thumb-link.active { background: #fff; border-radius: 20px; margin: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+/* --- 10. MINIMALIST --- */
+.theme-monolith .thumb-zone-nav { background-color: color-mix(in srgb, #000000, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; border-radius: 0; padding: 15px 0; } .theme-monolith .thumb-link { color: #666; text-transform: uppercase; } .theme-monolith .thumb-link.active { color: #fff; }
+.theme-min-dot .label { display: none; } .theme-min-dot .thumb-link.active .label { display: block; font-size: 8px; } .theme-min-dot .thumb-link.active::after { content: "•"; position: absolute; bottom: 0; }
+.theme-ghost .thumb-zone-nav { background: transparent !important; backdrop-filter: none; box-shadow: none; } .theme-ghost .icon-box { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); color: #fff; }
+.theme-line .thumb-zone-nav { background: #fff !important; border-top: 1px solid #000; border-radius: 0; } .theme-line .thumb-link.active { border-top: 2px solid #000; margin-top: -3px; }
+.theme-underline .thumb-zone-nav { background: #fff !important; border-radius: 0; } .theme-underline .thumb-link.active { text-decoration: underline; }
+.theme-overline .thumb-zone-nav { background: #fff !important; border-radius: 0; } .theme-overline .thumb-link.active { border-top: 2px solid #000; padding-top: 2px; }
+.theme-dots .thumb-zone-nav { background: #fff !important; border-radius: 30px; gap: 10px; } .theme-dots .thumb-link .label { display: none; } .theme-dots .thumb-link.active .icon-box { background: #000; color: #fff; border-radius: 50%; }
+.theme-boxed .thumb-zone-nav { background: transparent !important; border: 1px solid #000; border-radius: 5px; } .theme-boxed .thumb-link.active { background: #000; color: #fff !important; }
+.theme-pearl .thumb-zone-nav { background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; border-radius: 50px; border: 0.5px solid #eee; padding: 5px 15px; } .theme-pearl .thumb-link.active { transform: translateY(-3px); }
+.theme-soft-pop .thumb-zone-nav { background-color: color-mix(in srgb, #f0f4f8, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; border-radius: 30px; } .theme-soft-pop .thumb-link.active { background: #fff; border-radius: 20px; margin: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-/* 11. The Sticker */
-.theme-sticker .icon-box { background: #fff; border: 2px solid #000; border-radius: 8px; transform: rotate(-3deg); }
-.theme-sticker .thumb-link:nth-child(even) .icon-box { transform: rotate(3deg); }
+/* --- 11. ATMOSPHERE --- */
+.theme-nature .thumb-zone-nav { background: #e9f5db !important; border: 1px solid #cfe1b9; border-radius: 20px 20px 0 0; } .theme-nature .thumb-link.active { color: #4a7c59 !important; font-weight: bold; }
+.theme-luxury .thumb-zone-nav { background: #000 !important; border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; } .theme-luxury .thumb-link { color: #777 !important; font-family: serif; } .theme-luxury .thumb-link.active { color: #d4af37 !important; }
+.theme-eco .thumb-zone-nav { background: #fff !important; border: 1px solid #8bc34a; } .theme-eco .thumb-link.active { color: #558b2f; }
+.theme-desert .thumb-zone-nav { background: #d7ccc8 !important; } .theme-desert .thumb-link.active { color: #5d4037; }
+.theme-forest .thumb-zone-nav { background: #1b5e20 !important; } .theme-forest .thumb-link { color: #a5d6a7 !important; } .theme-forest .thumb-link.active { color: #fff !important; }
+.theme-fire .thumb-zone-nav { background: #212121 !important; border-top: 2px solid #ff5722; } .theme-fire .thumb-link.active { color: #ff5722 !important; }
 
-/* 12. The Socialite */
-.theme-socialite .thumb-zone-nav { overflow-x: auto; justify-content: flex-start; padding: 10px 20px; -webkit-overflow-scrolling: touch; }
-.theme-socialite .thumb-link { min-width: 80px; flex: 0 0 auto; }
+/* --- 12. SEASONAL --- */
+.theme-xmas .thumb-zone-nav { background: #c62828 !important; border-top: 4px solid #fff; border-radius: 10px 10px 0 0; } .theme-xmas .thumb-link { color: #fff !important; }
+.theme-halloween .thumb-zone-nav { background: #212121 !important; border-bottom: 4px solid #ff9800; } .theme-halloween .thumb-link.active { color: #ff9800 !important; }
+.theme-valentine .thumb-zone-nav { background: #fce4ec !important; } .theme-valentine .thumb-link.active { color: #e91e63; } .theme-valentine .thumb-link.active i::before { content: "❤"; position: absolute; font-size: 10px; top: -5px; right: -5px; }
+.theme-spring .thumb-zone-nav { background: #f1f8e9 !important; border: 1px solid #aed581; } .theme-spring .thumb-link.active { color: #64dd17; }
+.theme-summer .thumb-zone-nav { background: #fff9c4 !important; border-bottom: 3px solid #ffeb3b; } .theme-summer .thumb-link.active { color: #fbc02d; }
+.theme-autumn .thumb-zone-nav { background: #fff3e0 !important; border-top: 2px solid #ff5722; } .theme-autumn .thumb-link.active { color: #e64a19; }
+.theme-winter .thumb-zone-nav { background: #e3f2fd !important; border: 1px solid #90caf9; } .theme-winter .thumb-link.active { color: #1e88e5; }
 
-/* 13. Dark Mode Pro (Dark Grey -> Transparent Dark Grey) */
-.theme-dark-pro .thumb-zone-nav { 
-  background-color: color-mix(in srgb, #121212, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  border-radius: 16px; border: 1px solid #333; 
-}
-.theme-dark-pro .thumb-link.active { color: #00e5ff; }
-
-/* 14. The Grid (White -> Transparent White) */
-.theme-grid .thumb-zone-nav { 
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; 
-  background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important;
-  border-radius: 12px; 
-}
-
-/* 15. The Side-Bar */
-.theme-side-fan { left: 20px; transform: none; width: 60px; }
-.theme-side-fan .thumb-zone-nav { flex-direction: column-reverse; gap: 15px; }
-
-/* 16. Minimalist Dot */
-.theme-min-dot .label { display: none; }
-.theme-min-dot .thumb-link.active .label { display: block; font-size: 8px; }
-.theme-min-dot .thumb-link.active::after { content: "•"; position: absolute; bottom: 0; }
-
-/* 17. Border-Top */
-.theme-border-top .thumb-zone-nav { background: transparent !important; }
-.theme-border-top .thumb-link.active { border-top: 3px solid var(--thumb-text-active); padding-top: 2px; }
-
-
-
+/* --- 13. UTILITY / LEGACY --- */
+.theme-neumorphic .thumb-zone-nav { background-color: color-mix(in srgb, #e0e0e0, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff; border-radius: 20px; } .theme-neumorphic .thumb-link.active .icon-box { color: var(--thumb-text-active); text-shadow: 0 0 8px var(--thumb-text-active); }
+.theme-hot-key .thumb-link:nth-child(3) .icon-box { background: var(--thumb-text-active); color: #fff !important; width: 55px; height: 55px; border-radius: 50%; margin-top: -35px; border: 5px solid var(--thumb-bg-color); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+.theme-stepper::before { content: ""; position: absolute; top: 0; left: 0; width: 60%; height: 3px; background: var(--thumb-text-active); z-index: 2; } .theme-stepper .thumb-zone-nav { padding-top: 15px; }
+.theme-side-fan { left: 20px; transform: none; width: 60px; } .theme-side-fan .thumb-zone-nav { flex-direction: column-reverse; gap: 15px; }
+.theme-border-top .thumb-zone-nav { background: transparent !important; } .theme-border-top .thumb-link.active { border-top: 3px solid var(--thumb-text-active); padding-top: 2px; }
+.theme-grid .thumb-zone-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background-color: color-mix(in srgb, #ffffff, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; border-radius: 12px; }
+.theme-socialite .thumb-zone-nav { overflow-x: auto; justify-content: flex-start; padding: 10px 20px; -webkit-overflow-scrolling: touch; } .theme-socialite .thumb-link { min-width: 80px; flex: 0 0 auto; }
+.theme-dark-pro .thumb-zone-nav { background-color: color-mix(in srgb, #121212, transparent calc(100% - (var(--thumb-nav_opacity) * 100%))) !important; border-radius: 16px; border: 1px solid #333; } .theme-dark-pro .thumb-link.active { color: #00e5ff; }
 
 /* =========================================
    COMPONENTS: BADGES & ANIMATIONS
    ========================================= */
 .cart-badge {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  background-color: #FF3B30;
-  color: #FFFFFF;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--thumb-bg-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  pointer-events: none;
-  z-index: 10;
-  animation: badge-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: absolute; top: -4px; right: -6px; background-color: #FF3B30; color: #FFFFFF;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 11px; font-weight: 600;
+  min-width: 18px; height: 18px; padding: 0 4px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--thumb-bg-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  pointer-events: none; z-index: 10; animation: badge-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes badge-pop {
@@ -304,266 +300,84 @@
   }
 }
 
-
-
 /* =========================================
    CONTEXTUAL LAYOUT: PRODUCT PAGE SIDEBAR
    ========================================= */
 .page-type-product .thumb-wrapper {
   /* Reset bottom fixed positioning */
-  bottom: auto;
-  left: auto;
-  transform: none;
-  
+  bottom: auto; left: auto; transform: none;
   /* Dock to Right Side */
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  
+  top: 50%; right: 10px; transform: translateY(-50%);
   /* Change Dimensions */
-  width: 60px; /* Slim vertical pill */
-  height: auto;
-  min-height: 200px;
-  
+  width: 60px; height: auto; min-height: 200px;
   /* Visual Tweaks for Side Dock */
-  border-radius: 30px;
-  padding: 20px 0;
-  flex-direction: column;
+  border-radius: 30px; padding: 20px 0; flex-direction: column;
 }
 
 .page-type-product .thumb-zone-nav {
-  flex-direction: column; /* Stack icons vertically */
-  gap: 20px;
-  padding: 0;
-  align-items: center;
-  justify-content: center;
-  background: var(--thumb-bg-color); /* Ensure background is solid */
+  flex-direction: column; gap: 20px; padding: 0;
+  align-items: center; justify-content: center;
+  background: var(--thumb-bg-color);
 }
 
-.page-type-product .thumb-link {
-  width: 100%;
-  padding: 0;
-}
-
-.page-type-product .label {
-  display: none; /* Hide labels in side mode to keep it clean */
-}
-
-/* Ensure badges still look good */
-.page-type-product .cart-badge {
-  top: 0;
-  right: 10px;
-}
-
-
-
+.page-type-product .thumb-link { width: 100%; padding: 0; }
+.page-type-product .label { display: none; }
+.page-type-product .cart-badge { top: 0; right: 10px; }
 
 /* =========================================
    INTERACTION: DRAG & ROTATE
    ========================================= */
-
-/* Visual cue while dragging */
 .thumb-wrapper.is-dragging {
-  opacity: 0.9;
-  transform: scale(1.02) !important;
-  transition: none !important; /* Instant follow */
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  opacity: 0.9; transform: scale(1.02) !important; transition: none !important; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
 }
 
-/* Vertical Orientation (Side Docked) */
 .thumb-wrapper.vertical-dock {
-  /* Reset layout for vertical stack */
-  min-height: 200px;
-  height: auto;
-  flex-direction: column;
-  padding: 20px 0;
-  
-  /* Ensure transitions happen smoothly after drop */
+  min-height: 200px; height: auto; flex-direction: column; padding: 20px 0;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .thumb-wrapper.vertical-dock .thumb-zone-nav {
-  flex-direction: column; /* Stack icons */
-  gap: 15px;
-  width: 100%;
-  height: 100%;
-  padding: 15px 0;
-  border-radius: 35px;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; gap: 15px; width: 100%; height: 100%; padding: 15px 0;
+  border-radius: 35px; justify-content: center; align-items: center;
 }
 
-.thumb-wrapper.vertical-dock .thumb-link {
-  width: 100%;
-  flex: 0 0 auto; /* Don't stretch */
-  padding: 5px 0;
-}
+.thumb-wrapper.vertical-dock .thumb-link { width: 100%; flex: 0 0 auto; padding: 5px 0; }
+.thumb-wrapper.vertical-dock .label { display: none; }
+.thumb-wrapper.vertical-dock .cart-badge { top: 0; right: 8px; }
 
-.thumb-wrapper.vertical-dock .label {
-  /* Hide labels in vertical mode to keep it slim */
-  display: none; 
-}
-
-.thumb-wrapper.vertical-dock .cart-badge {
-  top: 0;
-  right: 8px;
-}
-
-/* Fix specific themes in vertical mode */
 .theme-action.vertical-dock, 
 .theme-text-only.vertical-dock {
-  bottom: auto !important;
-  left: auto !important;
-  width: 60px !important;
+  bottom: auto !important; left: auto !important; width: 60px !important;
 }
+
 /* =========================================
    COMPONENT: DRAG HANDLE (THEME AWARE)
    ========================================= */
 .drag-handle {
-  /* Layout & Position */
-  position: absolute;
-  top: -12px;
-  right: -8px;
-  width: 24px;
-  height: 24px;
-  z-index: 2147483650 !important;
-
-  /* Base Appearance (Adaptive High Contrast) */
-  background-color: var(--thumb-text-active);
-  color: var(--thumb-bg-color);
-  border: 2px solid var(--thumb-bg-color);
-  border-radius: 50%;
+  position: absolute; top: -12px; right: -8px; width: 24px; height: 24px; z-index: 2147483650 !important;
+  background-color: var(--thumb-text-active); color: var(--thumb-bg-color);
+  border: 2px solid var(--thumb-bg-color); border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-
-  /* Content Alignment */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* Interaction */
-  cursor: grab;
-  touch-action: none;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  /* Intro Animation */
+  display: flex; align-items: center; justify-content: center;
+  cursor: grab; touch-action: none; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   animation: handle-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
 }
 
-/* Inner Icon/SVG */
-.drag-handle i,
-.drag-handle svg {
-  font-size: 14px;
-  line-height: 1;
-  pointer-events: none;
-  width: 14px;
-  height: 14px;
-}
+.drag-handle i, .drag-handle svg { font-size: 14px; line-height: 1; pointer-events: none; width: 14px; height: 14px; }
+.drag-handle::after { content: ''; position: absolute; inset: -15px; border-radius: 50%; }
 
-/* Invisible Hit Zone (44px target) */
-.drag-handle::after {
-  content: '';
-  position: absolute;
-  inset: -15px; 
-  border-radius: 50%;
-}
+/* Theme Overrides for Handle */
+.theme-monolith .drag-handle { background-color: #ffffff; color: #000000; border: 2px solid #333; box-shadow: none; border-radius: 4px; }
+.theme-midnight .drag-handle { background-color: #1a1a1a; color: var(--thumb-text-active); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+.theme-ghost .drag-handle { background-color: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); box-shadow: none; }
+.theme-neumorphic .drag-handle { background-color: #e0e0e0; color: #666; border: none; box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff; }
+.thumb-wrapper.is-dragging.theme-neumorphic .drag-handle { box-shadow: inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff; background-color: #e0e0e0; }
+.theme-sticker .drag-handle { background-color: #fff; color: #000; border: 2px solid #000; box-shadow: 2px 2px 0px #000; transform: rotate(5deg); }
+.theme-bubble-tea .drag-handle { top: 0; right: -5px; background-color: #fff; color: var(--thumb-text-active); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-/* -----------------------------------------
-   THEME-SPECIFIC OVERRIDES
-   ----------------------------------------- */
+.drag-handle:active, .thumb-wrapper.is-dragging .drag-handle { cursor: grabbing; }
+.thumb-wrapper:not(.theme-neumorphic):not(.theme-monolith).is-dragging .drag-handle { background-color: #2563EB; color: #fff; border-color: #2563EB; transform: scale(1.1); }
+.thumb-wrapper.vertical-dock .drag-handle { top: -10px; right: 50%; transform: translateX(50%); }
+.thumb-wrapper.vertical-dock.theme-bubble-tea .drag-handle { right: 50%; }
 
-/* 1. iOS Glass & Soft Pop (Keep Standard) */
-/* No override needed, uses base variables perfectly */
-
-/* 2. Monolith (Industrial/Dark) */
-.theme-monolith .drag-handle {
-  background-color: #ffffff;
-  color: #000000;
-  border: 2px solid #333;
-  box-shadow: none;
-  border-radius: 4px; /* Square handle for blocky theme */
-}
-
-/* 3. Midnight (Dark Capsule) */
-.theme-midnight .drag-handle {
-  background-color: #1a1a1a;
-  color: var(--thumb-text-active);
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
-
-/* 4. Ghost (Minimal/Transparent) */
-.theme-ghost .drag-handle {
-  background-color: rgba(255,255,255,0.2);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.3);
-  backdrop-filter: blur(4px);
-  box-shadow: none;
-}
-
-/* 5. Neumorphic (Soft 3D) */
-.theme-neumorphic .drag-handle {
-  background-color: #e0e0e0;
-  color: #666;
-  border: none;
-  box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff;
-}
-.thumb-wrapper.is-dragging.theme-neumorphic .drag-handle {
-  box-shadow: inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff; /* Pressed effect */
-  background-color: #e0e0e0;
-}
-
-/* 6. Sticker (Comic Style) */
-.theme-sticker .drag-handle {
-  background-color: #fff;
-  color: #000;
-  border: 2px solid #000;
-  box-shadow: 2px 2px 0px #000; /* Hard shadow */
-  transform: rotate(5deg);
-}
-
-/* 7. Bubble Tea (Round) */
-.theme-bubble-tea .drag-handle {
-  top: 0; 
-  right: -5px;
-  background-color: #fff;
-  color: var(--thumb-text-active);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* -----------------------------------------
-   STATES & TRANSFORMS
-   ----------------------------------------- */
-
-/* Active / Dragging Cursor */
-.drag-handle:active,
-.thumb-wrapper.is-dragging .drag-handle {
-  cursor: grabbing;
-}
-
-/* Dragging Appearance (Global Highlight) */
-/* Note: Neumorphic has its own override above */
-.thumb-wrapper:not(.theme-neumorphic):not(.theme-monolith).is-dragging .drag-handle {
-  background-color: #2563EB;
-  color: #fff;
-  border-color: #2563EB;
-  transform: scale(1.1);
-}
-
-/* Vertical Mode - Handle Position Adjustment */
-.thumb-wrapper.vertical-dock .drag-handle {
-  top: -10px;
-  right: 50%;
-  transform: translateX(50%);
-}
-
-.thumb-wrapper.vertical-dock.theme-bubble-tea .drag-handle {
-  right: 50%; /* Fix specific offset for bubble tea */
-}
-
-/* -----------------------------------------
-   ANIMATIONS
-   ----------------------------------------- */
-@keyframes handle-pop {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+@keyframes handle-pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
