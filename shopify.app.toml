@@ -2,7 +2,7 @@
 
 client_id = "e71907ca8287432328a4af60113ea61a"
 name = "Mobile first"
-application_url = "https://shopify-waitlist-app.onrender.com"
+application_url = "https://navextensions.onrender.com"
 embedded = true
 
 [build]
@@ -24,7 +24,7 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://shopify-waitlist-app.onrender.com/auth/callback",
-  "https://shopify-waitlist-app.onrender.com/auth/shopify/callback",
-  "https://shopify-waitlist-app.onrender.com/api/auth/callback"
+  "https://navextensions.onrender.com/auth/callback",
+  "https://navextensions.onrender.com/auth/shopify/callback",
+  "https://navextensions.onrender.com/api/auth/callback"
 ]
