@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
       
       <h2>1. Introduction</h2>
       <p>
-        Mobile First ("we", "our", or "us") provides this Privacy Policy to describe how we collect, use, 
+        Thumb-Zone Nav: Mobile Bar ("we", "our", or "us") provides this Privacy Policy to describe how we collect, use, 
         and handle your personal information when you use our Shopify app.
       </p>
 

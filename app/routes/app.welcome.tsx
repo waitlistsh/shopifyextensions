@@ -8,14 +8,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Welcome() {
   return (
-    <s-page heading="Welcome to Mobile First">
+    <s-page heading="Welcome to Thumb-Zone Nav: Mobile Bar">
       <s-stack gap="base" direction="block">
         
         {/* Main Section */}
         <s-section heading="Get Started with Thumb Zone Nav">
           <s-stack gap="base" direction="block">
             <s-paragraph>
-              Thank you for installing <strong>Mobile First</strong>! Follow these steps to activate your thumb-friendly navigation menu and boost your mobile conversions.
+              Thank you for installing <strong>Thumb-Zone Nav: Mobile Bar</strong>! Follow these steps to activate your thumb-friendly navigation menu and boost your mobile conversions.
             </s-paragraph>
             
             <s-heading>Step 1: Enable the App Embed</s-heading>
