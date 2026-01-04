@@ -23,7 +23,7 @@ export default function Welcome() {
         /* BUTTONS */
         .vibrant-button {
           background: linear-gradient(135deg, #5c6ac4 0%, #4f46e5 100%);
-          color: white !important; /* Force white text */
+          color: white !important;
           font-weight: 600;
           padding: 16px 32px;
           border-radius: 12px;
@@ -74,9 +74,8 @@ export default function Welcome() {
           overflow: hidden;
           position: relative;
           
-          /* --- YOUR SCREENSHOT HERE --- */
-          /* We assume you dropped 'screenshot.png' into the public folder */
-          background-image: url('/screenshot.png');
+          /* IMPORTANT: This expects a file named 'screenshot.png' in your 'public' folder */
+          background-image: url('/screenshot.png'); 
           background-size: cover;
           background-position: top center; 
           background-repeat: no-repeat;
@@ -134,12 +133,12 @@ export default function Welcome() {
                         </BlockStack>
 
                         <InlineStack gap="300" align="start" blockAlign="center">
-                            {/* FIXED: Links to /app (Dashboard) */}
+                            {/* LINK 1: DASHBOARD */}
                             <Link to="/app" className="vibrant-button">
                                Go to Dashboard & Enable
                             </Link>
 
-                            {/* FIXED: Links to /app/instruction (How to Use) */}
+                            {/* LINK 2: SCIENCE PAGE (Must match the new file name) */}
                             <Link to="/app/instruction" className="ghost-button">
                                How to Use & Science
                             </Link>
@@ -150,6 +149,7 @@ export default function Welcome() {
                     <div className="gradient-bg">
                         <div className="phone-frame">
                             <div className="phone-notch"></div>
+                            {/* This div uses the background-image defined in CSS above */}
                             <div className="phone-screen"></div>
                         </div>
                     </div>
