@@ -21,8 +21,12 @@ export default function App() {
       <PolarisAppProvider i18n={polarisTranslations}>
         <NavMenu>
           <Link to="/app" rel="home">Home</Link>
-          <Link to="/app/welcome">Welcome</Link>
-          <Link to="/app/instructions">How to use</Link>
+          
+          {/* NESTED MENU: Notice how the Link wraps around the other Link */}
+          <Link to="/app/welcome">
+            Welcome
+            <Link to="/app/instructions">How to use</Link>
+          </Link>
 
         </NavMenu>
         <Outlet />
