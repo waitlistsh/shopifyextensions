@@ -1,53 +1,60 @@
-import type { LoaderFunctionArgs } from "react-router";
-import { authenticate } from "../shopify.server";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-  return null;
-};
+import { Page, Layout, Card, Text, BlockStack, Button, InlineStack, Box } from "@shopify/polaris";
+import { ArrowRightIcon } from "@shopify/polaris-icons";
+import { Link } from "react-router"; // Use standard Link for internal nav
 
 export default function Welcome() {
   return (
-    <s-page heading="Welcome to Thumb-Zone Nav: Mobile Bar">
-      <s-stack gap="base" direction="block">
-        
-        {/* Main Section */}
-        <s-section heading="Get Started with Thumb Zone Nav">
-          <s-stack gap="base" direction="block">
-            <s-paragraph>
-              Thank you for installing <strong>Thumb-Zone Nav: Mobile Bar</strong>! Follow these steps to activate your thumb-friendly navigation menu and boost your mobile conversions.
-            </s-paragraph>
-            
-            <s-heading>Step 1: Enable the App Embed</s-heading>
-            <s-paragraph>
-              To see the menu on your store, you must enable the <strong>"thumb-zone-nav"</strong> App Embed in your Shopify Theme Editor.
-            </s-paragraph>
-            
-            {/* Note: s-button sometimes doesn't support href directly in all versions. 
-                If this still errors, change <s-button> to <s-link> */}
-            <s-link href="https://admin.shopify.com/store/current-shop/themes/current/editor?context=apps" target="_blank">
-              Open Theme Editor
-            </s-link>
+    <Page>
+      <Layout>
+        <Layout.Section>
+          <Box paddingBlockEnd="400">
+             <BlockStack align="center" inlineAlign="center" gap="400">
+                <Text as="h1" variant="headingXl" alignment="center">
+                   Welcome to Thumb-Zone Nav! 🚀
+                </Text>
+                <Text as="p" variant="bodyLg" tone="subdued" alignment="center">
+                   You are one step away from boosting your mobile conversion rates.
+                </Text>
+             </BlockStack>
+          </Box>
+        </Layout.Section>
 
-            <s-heading>Step 2: Customize Your Menu</s-heading>
-            <s-paragraph>
-              Go to the Dashboard to set up your links, icons, and colors. You can choose from over 100 themes to match your brand.
-            </s-paragraph>
-            <s-link href="/app">Go to Dashboard</s-link>
-          </s-stack>
-        </s-section>
+        <Layout.Section>
+          <Card>
+            <BlockStack gap="600">
+                <div style={{textAlign: "center"}}>
+                   {/* You can replace this with a real image/gif if you have one hosted */}
+                   <div style={{
+                       background: "linear-gradient(90deg, #e3f2fd 0%, #f3e5f5 100%)", 
+                       padding: "40px", 
+                       borderRadius: "12px",
+                       marginBottom: "20px"
+                   }}>
+                      <Text as="h2" variant="headingLg">Mobile Navigation Re-imagined</Text>
+                   </div>
+                </div>
 
-        {/* Sidebar / Help Section */}
-        <s-section heading="Need Help?">
-          <s-stack gap="base" direction="block">
-            <s-paragraph>
-              If you have any questions or need help configuring your menu, please contact our support team.
-            </s-paragraph>
-            <s-link href="mailto:support@example.com">Contact Support</s-link>
-          </s-stack>
-        </s-section>
-
-      </s-stack>
-    </s-page>
+                <BlockStack gap="400">
+                   <Text as="p" variant="bodyMd">
+                      Most mobile users hold their phones with one hand. Traditional top-menus are hard to reach. 
+                      <b>Thumb-Zone Nav</b> moves your critical links to the bottom of the screen, right where your customers' thumbs are.
+                   </Text>
+                   
+                   <InlineStack gap="300">
+                       <Link to="/app">
+                         <Button variant="primary" size="large" icon={ArrowRightIcon}>
+                           Go to Dashboard & Enable
+                         </Button>
+                       </Link>
+                       <Button url="https://waitlist.sh" target="_blank" variant="plain">
+                          Learn more about the science
+                       </Button>
+                   </InlineStack>
+                </BlockStack>
+            </BlockStack>
+          </Card>
+        </Layout.Section>
+      </Layout>
+    </Page>
   );
 }
