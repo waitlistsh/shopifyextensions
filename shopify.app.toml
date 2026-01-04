@@ -11,15 +11,16 @@ automatically_update_urls_on_dev = true
 [webhooks]
 api_version = "2025-01"
 
-[[webhooks.subscriptions]]
-topics = [ "app/scopes_update" ]
-uri = "/webhooks/app/scopes_update"
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/privacy"
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
 
-[[webhooks.subscriptions]]
-compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
-uri = "/webhooks/privacy"
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
 
 [access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "write_products"
 
 [auth]

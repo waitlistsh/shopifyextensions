@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
       <h2>5. Contact Us</h2>
       <p>
         For more information about our privacy practices, if you have questions, or if you would like to make a complaint, 
-        please contact us by e-mail at [YOUR EMAIL ADDRESS].
+        please contact us by e-mail at navexeui@outlook.com.
       </p>
     </div>
   );
