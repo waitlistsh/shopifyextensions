@@ -17,7 +17,6 @@ import {
 import {
   ExternalIcon,
   CheckIcon,
-  ArrowRightIcon,
   ChartLineIcon,
   MobileIcon,
 } from "@shopify/polaris-icons";
@@ -39,7 +38,6 @@ export default function Dashboard() {
 
   // Wizard Step Content
   const totalSteps = 3;
-  const progress = (currentStep / totalSteps) * 100;
 
   const handleNextStep = () => {
     if (currentStep < totalSteps) {
@@ -135,7 +133,7 @@ export default function Dashboard() {
             
             {/* If active, show a 'Manage' button, else show nothing (user must complete wizard) */}
             {isAppActive && (
-               <Button url={themeEditorUrl} target="_blank" variant="plain">Manage Settings</Button>
+               <Button url={themeEditorUrl} target="_blank" variant="plain" icon={ExternalIcon}>Manage Settings</Button>
             )}
           </InlineStack>
         </Card>
@@ -189,12 +187,16 @@ export default function Dashboard() {
                                     </BlockStack>
                                 </Grid.Cell>
                                 <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
-                                    {/* GIF Placeholder */}
-                                    <img 
-                                      src="/setup-step-2.gif" 
-                                      alt="Instruction GIF" 
-                                      style={{width: '100%', borderRadius: '8px', border: '1px solid #e5e7eb'}} 
-                                    />
+                                    {/* GIF Placeholder - Make sure to put setup-step-2.gif in your public folder */}
+                                    <div style={{background: '#f1f1f1', borderRadius: '8px', minHeight: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <img 
+                                          src="/setup-step-2.gif" 
+                                          alt="Instruction GIF" 
+                                          style={{maxWidth: '100%', borderRadius: '8px', display: 'block'}}
+                                          onError={(e) => (e.currentTarget.style.display = 'none')} 
+                                        />
+                                        {!isAppActive && <Text as="p" tone="subdued" variant="bodyXs">Preview GIF</Text>}
+                                    </div>
                                 </Grid.Cell>
                              </Grid>
                         )}
@@ -240,7 +242,7 @@ export default function Dashboard() {
                                 </Box>
                             </Grid.Cell>
                             <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
-                                <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb', borderRadius: '8px', border: '1px dashed #d1d5db'}}>
+                                <div style={{height: '100%', minHeight: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb', borderRadius: '8px', border: '1px dashed #d1d5db'}}>
                                     <Text as="p" tone="subdued">Chart visualization loading...</Text>
                                 </div>
                             </Grid.Cell>
@@ -273,7 +275,8 @@ export default function Dashboard() {
                   <Text as="p" variant="bodySm" tone="subdued">
                     Stuck on step {currentStep}? Our support team is ready.
                   </Text>
-                  <Button variant="plain" url="mailto:support@waitlist.sh">Contact Support</Button>
+                  {/* Updated with your mailto logic */}
+                  <Button variant="plain" url="mailto:your-email@example.com?subject=Support Request" external>Contact Support</Button>
                 </BlockStack>
               </div>
 

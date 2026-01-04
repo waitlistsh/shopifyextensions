@@ -22,7 +22,8 @@ export default function App() {
         <NavMenu>
           <Link to="/app" rel="home">Home</Link>
           <Link to="/app/welcome">Welcome</Link>
-          {/* REMOVED: Additional Page Link */}
+          <Link to="/app/instructions">How to use</Link>
+
         </NavMenu>
         <Outlet />
       </PolarisAppProvider>
