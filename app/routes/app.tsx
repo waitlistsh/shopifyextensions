@@ -25,7 +25,7 @@ export default function App() {
           {/* NESTED MENU: Notice how the Link wraps around the other Link */}
           <Link to="/app/welcome">
             Welcome
-            <Link to="/app/instructions">How to use</Link>
+            <Link to="/app/instruction">How to use</Link>
           </Link>
 
         </NavMenu>
