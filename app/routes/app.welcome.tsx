@@ -74,11 +74,12 @@ export default function Welcome() {
           overflow: hidden;
           position: relative;
           
-          /* IMPORTANT: This expects a file named 'screenshot.png' in your 'public' folder */
+          /* FIXED: Use 'contain' to fit the whole image inside */
           background-image: url('/screenshot.png'); 
-          background-size: cover;
-          background-position: top center; 
+          background-size: contain; 
+          background-position: center; 
           background-repeat: no-repeat;
+          background-color: #000; /* Adds black bars if image ratio is different */
         }
         .phone-notch {
           position: absolute;
@@ -105,7 +106,7 @@ export default function Welcome() {
             <Box paddingBlockEnd="800" paddingBlockStart="400">
                <BlockStack align="center" inlineAlign="center" gap="400">
                   <Text as="h1" variant="heading2xl" alignment="center" fontWeight="bold">
-                     Welcome to Thumb-Zone Nav 🚀
+                     Welcome to Thumb-Zone Nav
                   </Text>
                   <Text as="p" variant="bodyLg" tone="subdued" alignment="center">
                      Boost your mobile conversions with one-handed navigation.
